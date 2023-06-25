@@ -80,7 +80,8 @@ questions = [
     ),
 ]
 
-if __name__ == '__main__':
+
+def main():
     answers = inquirer.prompt(questions=questions, theme=GreenPassion())
     cmd = answers['host']
     cmd = cmd[6::]
