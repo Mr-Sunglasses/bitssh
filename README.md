@@ -8,6 +8,10 @@ It uses ```~/.ssh/config``` to list and connect to hosts.
 
 
 
+https://github.com/Mr-Sunglasses/bitssh/assets/81439109/f3164d7e-ea61-461d-92f3-0a470dc9eb65
+
+
+
 
 
 ## Installation
