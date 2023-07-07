@@ -1,13 +1,9 @@
 from rich.console import Console
 from rich.table import Table
 import inquirer
-from inquirer.themes import GreenPassion
-import os
-import re
-
-
+from . import utils
 try:
-    content = get_config_content(config_file=get_config_path())
+    content = utils.get_config_content(config_file=utils.get_config_path())
 except FileNotFoundError:
     print("Config file is not Found in ~/.ssh/config")
 ROWS = []
@@ -42,15 +38,3 @@ questions = [
         name="host", message="Select the Host Given in the Above List", choices=HOST
     ),
 ]
-
-
-def main():
-    answers = inquirer.prompt(questions=questions, theme=GreenPassion())
-    cmd = answers["host"]
-    cmd = cmd[6::]
-    cmd = f"ssh {cmd}"
-    console.print(
-        "Please Wait While Your System is Connecting to the Remote Server",
-        style="green",
-    )
-    os.system(cmd)
