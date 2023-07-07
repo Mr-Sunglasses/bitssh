@@ -1,0 +1,43 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bitssh"
+version = "1.1.0"
+description = "A command-line tool for managing SSH connections"
+readme = "README.md"
+authors = [{ name = "Kanishk Pachauri", email = "itskanishkp.py@gmail.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["bitssh", "sshmanager", "commandline"]
+dependencies = [
+    "rich",
+    "inquirer",
+]
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/Mr-Sunglasses/bitssh"
+
+[project.scripts]
+bitssh = "src.__main__:main"
+
+[tool.bumpver]
+current_version = "1.1.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message  = "Bump version {old_version} -> {new_version}"
+commit          = true
+tag             = true
+push            = false
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"src/__init__.py" = ["{version}"]
