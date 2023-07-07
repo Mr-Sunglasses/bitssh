@@ -7,7 +7,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'bitssh=src.bitssh:main'
+            'bitssh=src.__main__:main'
         ]
     },
     install_requires=[
