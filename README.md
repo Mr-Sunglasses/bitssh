@@ -11,12 +11,12 @@ A New and Modern SSH connector written in Python.
 Terminal user interface for SSH. It uses ~/.ssh/config to list and connect to hosts.
 
 <p align="center">
-    <img src="artwork/logo/bitssh_logo.png" width="320" height="220">
+    <img src="https://i.ibb.co/5Wm4PNh/bitssh-logo.png" width="320" height="220">
 </p>
 
 ## Demo
 
-![bitsshdemo](artwork/demo/bitssh_demo.gif)
+[![bitsshdemo](https://s12.gifyu.com/images/SWxC6.gif)](https://gifyu.com/image/SWxC6)
 
 ## Installation
 
