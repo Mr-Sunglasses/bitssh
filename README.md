@@ -10,7 +10,9 @@ A New and Modern SSH connector written in Python.
 
 Terminal user interface for SSH. It uses ~/.ssh/config to list and connect to hosts.
 
-![bitssh](artwork/logo/bitssh_logo.png)
+<p align="center">
+    <img src="artwork/logo/bitssh_logo.png" width="320" height="220">
+</p>
 
 
 ## Demo
