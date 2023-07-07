@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitssh"
-version = "1.1.1"
+version = "1.1.2"
 description = "A command-line tool for managing SSH connections"
 readme = "README.md"
 authors = [{ name = "Kanishk Pachauri", email = "itskanishkp.py@gmail.com" }]
@@ -31,7 +31,7 @@ Homepage = "https://github.com/Mr-Sunglasses/bitssh"
 bitssh = "bitssh.__main__:main"
 
 [tool.bumpver]
-current_version = "1.1.1"
+current_version = "1.1.2"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true

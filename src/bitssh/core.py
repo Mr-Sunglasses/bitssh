@@ -5,11 +5,13 @@ from . import utils
 try:
     content = utils.get_config_content(config_file=utils.get_config_path())
 except FileNotFoundError:
-    print("Config file is not Found in ~/.ssh/config")
+    raise Exception(
+        "Config file is not Found in ~/.ssh/config Please See the Docs of bitssh.")
 ROWS = []
 
 for host, attributes in content.items():
-    row = (attributes["Hostname"], host, attributes["port"], attributes["User"])
+    row = (attributes["Hostname"], host,
+           attributes["port"], attributes["User"])
     ROWS.append(row)
 
 
