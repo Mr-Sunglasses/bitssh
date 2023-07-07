@@ -28,7 +28,7 @@ dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
 Homepage = "https://github.com/Mr-Sunglasses/bitssh"
 
 [project.scripts]
-bitssh = "src.__main__:main"
+bitssh = "bitssh.__main__:main"
 
 [tool.bumpver]
 current_version = "1.1.1"
