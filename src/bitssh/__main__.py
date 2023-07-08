@@ -1,6 +1,5 @@
 import inquirer
 from inquirer.themes import GreenPassion
-from rich import console
 import os
 from . import core
 
@@ -10,7 +9,7 @@ def main():
     cmd = answers["host"]
     cmd = cmd[6::]
     cmd = f"ssh {cmd}"
-    console.print(
+    core.console.print(
         "Please Wait While Your System is Connecting to the Remote Server",
         style="green",
     )
