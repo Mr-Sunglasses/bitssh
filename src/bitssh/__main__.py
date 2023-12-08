@@ -1,19 +1,18 @@
-import inquirer
-from inquirer.themes import GreenPassion
 import os
-from . import core
+from .prompt import Prompt
+from .ui import UI
+from .argument_parser import Config
+from bitssh import __version__
 
 
 def main():
-    answers = inquirer.prompt(questions=core.questions, theme=GreenPassion())
-    cmd = answers["host"]
-    cmd = cmd[6::]
-    cmd = f"ssh {cmd}"
-    core.console.print(
-        "Please Wait While Your System is Connecting to the Remote Server",
-        style="green",
-    )
-    os.system(cmd)
+    config = Config()
+    if config.version:
+        print(f"bitssh {__version__}")
+    else:
+        UI.draw_table()
+        Prompt.ask_host_prompt()
+
 
 if __name__ == "__main__":
     main()
