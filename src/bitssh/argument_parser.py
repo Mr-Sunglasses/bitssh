@@ -1,8 +1,11 @@
 import argparse
 
+
 class Config:
     def __init__(self) -> None:
-        parser = argparse.ArgumentParser(description="A New and Modern SSH connector written in Python.")
+        parser = argparse.ArgumentParser(
+            description="A New and Modern SSH connector written in Python."
+        )
         parser.add_argument(
             "--version",
             action="store_true",

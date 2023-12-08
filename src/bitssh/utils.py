@@ -2,11 +2,14 @@ import os
 import re
 import pprint
 
-class ConfigPathUtility:
 
+class ConfigPathUtility:
     config_file_path = os.path.expanduser("~/.ssh/config")
     if not os.path.exists(config_file_path):
-        raise FileNotFoundError("Config file is not Found in ~/.ssh/config Please See the Docs of bitssh.")
+        raise FileNotFoundError(
+            "Config file is not Found in ~/.ssh/config Please See the Docs of bitssh."
+        )
+
     @classmethod
     def get_config_content(cls):
         config = {}
@@ -37,8 +40,7 @@ class ConfigPathUtility:
         ROWS = []
 
         for host, attributes in config_content.items():
-            row = (attributes["Hostname"], host,
-                   attributes["port"], attributes["User"])
+            row = (attributes["Hostname"], host, attributes["port"], attributes["User"])
             ROWS.append(row)
 
         return ROWS
