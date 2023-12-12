@@ -1,6 +1,5 @@
 import os
 import re
-import pprint
 
 
 class ConfigPathUtility:
@@ -12,26 +11,31 @@ class ConfigPathUtility:
 
     @classmethod
     def get_config_content(cls):
-        config = {}
-        current_host = None
 
         with open(cls.config_file_path, "r") as f:
-            lines = f.readlines()
+            lines = f.read()
 
-        for line in lines:
-            line = line.strip()
-
-            if re.match(r"^Host\s+", line):
-                current_host = re.sub(r"^Host\s+", "", line)
-                config[current_host] = {}
+        host_pattern = re.compile(r"Host\s+(\w+)", re.MULTILINE)
+        hostname_pattern = re.compile(
+            r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE)
+        user_pattern = re.compile(r"User\s+(\S+)", re.MULTILINE)
+        host_dict = {}
+        for match in host_pattern.finditer(lines):
+            host = match.group(1)
+            hostname_match = hostname_pattern.search(lines, match.end())
+            if hostname_match:
+                hostname = hostname_match.group(1)
             else:
-                match = re.match(r"^\s*([\w-]+)\s+(.*)", line)
-                if match:
-                    key = match.group(1)
-                    value = match.group(2)
-                    config[current_host][key] = value
+                hostname = host
+            user = user_pattern.search(lines, match.end())
+            if user:
+                user = user.group(1)
+            host_dict[host] = {
+                "Hostname": hostname,
+                "User": user,
+            }
 
-        return config
+        return host_dict
 
     @classmethod
     def get_config_file_row_data(cls):
@@ -40,7 +44,8 @@ class ConfigPathUtility:
         ROWS = []
 
         for host, attributes in config_content.items():
-            row = (attributes["Hostname"], host, attributes["port"], attributes["User"])
+            row = (attributes["Hostname"], host,
+                   '22', attributes["User"])
             ROWS.append(row)
 
         return ROWS
@@ -49,5 +54,5 @@ class ConfigPathUtility:
     def get_config_file_host_data(cls):
         HOST = []
         for hosts in cls.get_config_file_row_data():
-            HOST.append(f"Host: {hosts[1]}")
+            HOST.append(f"🖥️  -> {hosts[1]}")
         return HOST
