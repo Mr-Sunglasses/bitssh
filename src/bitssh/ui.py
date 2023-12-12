@@ -8,8 +8,9 @@ class UI:
 
     @classmethod
     def draw_table(cls):
-        table = Table(title="SSH Servers in Config File")
-        table.add_column("Hostname", justify="left", style="cyan", no_wrap=True)
+        table = Table(title="SSH Servers in Config File 📁")
+        table.add_column("Hostname", justify="left",
+                         style="cyan", no_wrap=True)
         table.add_column("Host", style="magenta")
         table.add_column("Port", justify="right", style="green")
         table.add_column("User", justify="right", style="yellow")

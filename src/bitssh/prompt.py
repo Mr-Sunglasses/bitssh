@@ -23,7 +23,7 @@ class Prompt:
         cmd = cmd[6::]
         cmd = f"ssh {cmd}"
         UI.console.print(
-            "Please Wait While Your System is Connecting to the Remote Server",
+            "Please Wait While Your System is Connecting to the Remote Server 🖥️",
             style="green",
         )
         os.system(cmd)
