@@ -1,14 +1,16 @@
 [build-system]
-requires      = ["setuptools>=61.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [project]
 name = "bitssh"
 version = "2.6.0"
-description = "A command-line tool for managing SSH connections"
+description = "A New and Modern SSH connector written in Python."
 readme = "README.md"
-authors = [{ name = "Kanishk Pachauri", email = "itskanishkp.py@gmail.com" }]
-license = { file = "LICENSE" }
+authors = [
+    { name = "Kanishk Pachauri", email = "itskanishkp.py@gmail.com" },
+]
+license = {text = "MIT"}
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
@@ -42,3 +44,6 @@ push            = false
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/bitssh/__init__.py" = ["{version}"]
+
+[tool.pdm]
+package-type = "library"
