@@ -20,6 +20,7 @@ keywords = ["bitssh", "sshmanager", "commandline"]
 dependencies = [
     "rich",
     "inquirer",
+    "pre-commit>=3.6.0",
 ]
 requires-python = ">=3.9"
 
@@ -47,3 +48,6 @@ push            = false
 
 [tool.pdm]
 package-type = "library"
+
+[tool.pdm.scripts]
+lint = "pre-commit run --all-files"
