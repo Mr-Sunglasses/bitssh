@@ -1,12 +1,11 @@
-import os
 from .prompt import Prompt
 from .ui import UI
 from .argument_parser import Config
 from bitssh import __version__
 
 
-def main():
-    config = Config()
+def main() -> None:
+    config: Config = Config()
     if config.version:
         print(f"bitssh {__version__}")
     else:
