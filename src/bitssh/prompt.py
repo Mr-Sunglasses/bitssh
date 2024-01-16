@@ -7,7 +7,7 @@ import os
 
 class Prompt:
     @classmethod
-    def ask_host_prompt(cls):
+    def ask_host_prompt(cls) -> None:
         HOST = ConfigPathUtility.get_config_file_host_data()
         questions = [
             inquirer.List(

@@ -1,0 +1,5 @@
+rich~=13.7.0
+path~=16.9.0
+inquirer~=3.2.1
+bitssh~=2.6.0
+setuptools~=69.0.3

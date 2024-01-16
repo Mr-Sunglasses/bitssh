@@ -11,7 +11,7 @@ body:
     attributes:
       label: Describe the feature you'd like to request
       description: A clear and concise description of what the problem is.
-      placeholder : | 
+      placeholder : |
         Ex. I'm always frustrated when [...]
     validations:
       required: true
@@ -35,7 +35,7 @@ body:
     attributes:
       label: Additional context
       description: Add any other context or screenshots about the feature request here.
-      placeholder : | 
+      placeholder : |
         context, screenshots, related links , etc.
     validations:
       required: false
