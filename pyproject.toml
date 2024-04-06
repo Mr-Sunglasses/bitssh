@@ -1,6 +1,6 @@
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitssh"
@@ -34,6 +34,12 @@ Docs = "https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md"
 
 [project.scripts]
 bitssh = "bitssh.__main__:main"
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pre-commit",
+    "ruff",
+]
 
 [tool.bumpver]
 current_version = "2.6.0"
