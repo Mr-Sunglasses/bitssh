@@ -4,32 +4,34 @@ import re
 
 class ConfigPathUtility:
     config_file_path = os.path.expanduser("~/.ssh/config")
-    if not os.path.exists(config_file_path):
-        raise FileNotFoundError(
-            "Config file is not Found in ~/.ssh/config Please See the Docs of bitssh."
-        )
+
+    @classmethod
+    def _validate_config_file(cls):
+        if not os.path.exists(cls.config_file_path):
+            raise FileNotFoundError(
+                f"Config file not found at {cls.config_file_path}. Please see the documentation for bitssh."
+            )
 
     @classmethod
     def get_config_content(cls):
+        cls._validate_config_file()
 
-        with open(cls.config_file_path, "r") as f:
-            lines = f.read()
+        with open(cls.config_file_path, "r") as file:
+            lines = file.read()
 
         host_pattern = re.compile(r"Host\s+(\w+)", re.MULTILINE)
-        hostname_pattern = re.compile(
-            r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE)
+        hostname_pattern = re.compile(r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE)
         user_pattern = re.compile(r"User\s+(\S+)", re.MULTILINE)
+
         host_dict = {}
         for match in host_pattern.finditer(lines):
             host = match.group(1)
             hostname_match = hostname_pattern.search(lines, match.end())
-            if hostname_match:
-                hostname = hostname_match.group(1)
-            else:
-                hostname = host
-            user = user_pattern.search(lines, match.end())
-            if user:
-                user = user.group(1)
+            hostname = hostname_match.group(1) if hostname_match else host
+
+            user_match = user_pattern.search(lines, match.end())
+            user = user_match.group(1) if user_match else None
+
             host_dict[host] = {
                 "Hostname": hostname,
                 "User": user,
@@ -41,18 +43,13 @@ class ConfigPathUtility:
     def get_config_file_row_data(cls):
         config_content = cls.get_config_content()
 
-        ROWS = []
+        rows = [
+            (attributes["Hostname"], host, "22", attributes["User"])
+            for host, attributes in config_content.items()
+        ]
 
-        for host, attributes in config_content.items():
-            row = (attributes["Hostname"], host,
-                   '22', attributes["User"])
-            ROWS.append(row)
-
-        return ROWS
+        return rows
 
     @classmethod
     def get_config_file_host_data(cls):
-        HOST = []
-        for hosts in cls.get_config_file_row_data():
-            HOST.append(f"🖥️  -> {hosts[1]}")
-        return HOST
+        return [f"🖥️  -> {host[1]}" for host in cls.get_config_file_row_data()]
