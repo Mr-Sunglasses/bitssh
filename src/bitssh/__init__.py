@@ -1,10 +1,8 @@
-from importlib import resources
-
 try:
     import tomllib
 except ModuleNotFoundError:
     # Third party imports
-    import tomli as tomllib
+    pass
 
 
 __version__ = "2.6.0"

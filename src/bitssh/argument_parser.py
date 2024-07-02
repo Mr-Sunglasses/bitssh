@@ -1,9 +1,9 @@
-import argparse
+from argparse import ArgumentParser
 
 
 class Config:
     def __init__(self) -> None:
-        parser = argparse.ArgumentParser(
+        parser: ArgumentParser = ArgumentParser(
             description="A New and Modern SSH connector written in Python."
         )
         parser.add_argument(

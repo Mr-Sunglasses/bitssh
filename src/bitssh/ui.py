@@ -4,9 +4,8 @@ from .utils import ConfigPathUtility
 
 console = Console()
 
-
 def draw_table():
-    table = Table(title="SSH Servers in Config File 📁")
+    table: Table = Table(title="SSH Servers in Config File 📁")
     table.add_column("Hostname", justify="left", style="cyan", no_wrap=True)
     table.add_column("Host", style="magenta")
     table.add_column("Port", justify="right", style="green")

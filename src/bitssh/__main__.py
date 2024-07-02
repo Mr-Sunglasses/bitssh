@@ -1,7 +1,7 @@
 from .cli import run
 
 
-def main():
+def main() -> None:
     run()
 
 
