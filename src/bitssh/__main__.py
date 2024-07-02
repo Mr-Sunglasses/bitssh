@@ -1,16 +1,8 @@
-from .prompt import Prompt
-from .ui import UI
-from .argument_parser import Config
-from bitssh import __version__
+from .cli import run
 
 
 def main() -> None:
-    config: Config = Config()
-    if config.version:
-        print(f"bitssh {__version__}")
-    else:
-        UI.draw_table()
-        Prompt.ask_host_prompt()
+    run()
 
 
 if __name__ == "__main__":

@@ -1,41 +1,65 @@
 import os
+import unittest
+from unittest.mock import patch
+from bitssh.utils import ConfigPathUtility
 
-from typing import Dict
-from bitssh.utils import get_config_path, get_config_content
-
-
-def test_get_config_path() -> None:
-    config_path: Dict[str, Dict[str, str]] = get_config_path()
-    assert isinstance(config_path, str)
-    assert os.path.isfile(config_path)
+from typing import Dict, List, Tuple
 
 
-def test_get_config_content() -> None:
-    test_config_file = "config"
-    # Create a test config file with sample SSH server configurations
-    with open(test_config_file, "w") as f:
-        f.write(
-            """
-        Host test1
-            Hostname example.com
-            User user1
-            port 22
+class TestConfigPathUtility(unittest.TestCase):
+    def setUp(self) -> None:
+        self.mock_config_data: str = """
+Host testHost1
+    HostName test.hostname1.com
+    User testUser1
+Host testHost2
+    HostName test.hostname2.com
+    User testUser2
+"""
 
-        Host test2
-            Hostname example.org
-            User user2
-            port 22
-        """
+    def tearDown(self) -> None:
+        if os.path.exists("config"):
+            os.remove("config")
+
+    @patch("os.path.exists", return_value=True)
+    @patch("builtins.open")
+    def test_get_config_content_success(self, mock_open, mock_exists) -> None:
+        mock_open.return_value.__enter__.return_value.read.return_value = (
+            self.mock_config_data
         )
+        expected: Dict[str, Dict[str, str]] = {
+            "testHost1": {"Hostname": "test.hostname1.com", "User": "testUser1"},
+            "testHost2": {"Hostname": "test.hostname2.com", "User": "testUser2"},
+        }
+        result: ConfigPathUtility = ConfigPathUtility.get_config_content()
+        self.assertEqual(result, expected)
 
-    config_content: Dict[str, Dict[str, str]] = get_config_content(
-        config_file=test_config_file
-    )
-    assert isinstance(config_content, dict)
-    assert "test1" in config_content
-    assert "test2" in config_content
-    assert config_content["test1"]["User"] == "user1"
-    assert config_content["test2"]["Hostname"] == "example.org"
+    @patch("os.path.exists", return_value=True)
+    @patch("builtins.open")
+    def test_get_config_file_row_data(self, mock_open, mock_exists) -> None:
+        mock_open.return_value.__enter__.return_value.read.return_value = (
+            self.mock_config_data
+        )
+        expected_rows: List[Tuple[str, str, str, str]] = [
+            ("test.hostname1.com", "testHost1", "22", "testUser1"),
+            ("test.hostname2.com", "testHost2", "22", "testUser2"),
+        ]
+        rows: ConfigPathUtility = ConfigPathUtility.get_config_file_row_data()
+        self.assertEqual(rows, expected_rows)
 
-    # Clean up the test config file
-    os.remove(test_config_file)
+    @patch("os.path.exists", return_value=True)
+    @patch("builtins.open")
+    def test_get_config_file_host_data(self, mock_open, mock_exists) -> None:
+        mock_open.return_value.__enter__.return_value.read.return_value = (
+            self.mock_config_data
+        )
+        expected_hosts: List = [
+            "🖥️  -> testHost1",
+            "🖥️  -> testHost2",
+        ]
+        hosts: ConfigPathUtility = ConfigPathUtility.get_config_file_host_data()
+        self.assertEqual(hosts, expected_hosts)
+
+
+if __name__ == "__main__":
+    unittest.main()
