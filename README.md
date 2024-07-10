@@ -8,7 +8,7 @@
 
 A New and Modern SSH connector written in Python.
 
-Terminal user interface for SSH. It uses ~/.ssh/config to list and connect to hosts.
+Terminal user interface for SSH. It uses `~/.ssh/config` to list and connect to hosts.
 
 <p align="center">
     <img src="https://i.ibb.co/5Wm4PNh/bitssh-logo.png" width="320" height="220">
@@ -20,7 +20,7 @@ Terminal user interface for SSH. It uses ~/.ssh/config to list and connect to ho
 
 ## Installation
 
-Install my-project with pip
+Install bitssh with pip
 
 ```bash
   pip3 install bitssh
@@ -49,7 +49,7 @@ Install from source
 
 Here's a sample `~/.ssh/config` file that is recognized by bitssh:
 
-```nginx
+```bash
 Host abc
 	Hostname xxx.xx.xx.xx
 	User test1
