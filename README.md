@@ -16,7 +16,7 @@ Terminal user interface for SSH. It uses `~/.ssh/config` to list and connect to 
 
 ## Demo
 
-[![bitsshdemo](https://s12.gifyu.com/images/SWxC6.gif)](https://gifyu.com/image/SWxC6)
+[![bitsshdemo](artwork/demo/bitssh_demo.gif)]
 
 ## Installation
 
