@@ -20,6 +20,14 @@ Terminal user interface for SSH. It uses `~/.ssh/config` to list and connect to 
 
 ## Installation
 
+Install bitssh with docker
+
+```bash
+
+  docker run --rm -it -v ~/.ssh:/root/.ssh mrsunglasses/bitssh	
+
+```
+
 Install bitssh with pip
 
 ```bash
