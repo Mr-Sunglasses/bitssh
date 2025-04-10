@@ -1,12 +1,12 @@
 import os
 import re
+from typing import Dict, List, Match, Optional, Pattern, Tuple
 
 from path import Path
-from typing import Dict, Pattern, Optional, Match, List, Tuple
 
 
 class ConfigPathUtility:
-    config_file_path: Path = os.path.expanduser("~/.ssh/config")
+    config_file_path: str = os.path.expanduser("~/.ssh/config")
 
     @classmethod
     def _validate_config_file(cls) -> None:
@@ -23,13 +23,17 @@ class ConfigPathUtility:
             lines = file.read()
 
         host_pattern: Pattern[str] = re.compile(r"Host\s+(\w+)", re.MULTILINE)
-        hostname_pattern: Pattern[str] = re.compile(r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE)
+        hostname_pattern: Pattern[str] = re.compile(
+            r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE
+        )
         user_pattern: Pattern[str] = re.compile(r"User\s+(\S+)", re.MULTILINE)
 
         host_dict: Dict[str, Dict[str, str]] = {}
         for match in host_pattern.finditer(lines):
             host: str = match.group(1)
-            hostname_match: Optional[Match[str]] = hostname_pattern.search(lines, match.end())
+            hostname_match: Optional[Match[str]] = hostname_pattern.search(
+                lines, match.end()
+            )
             hostname: str = hostname_match.group(1) if hostname_match else host
 
             user_match: Optional[Match[str]] = user_pattern.search(lines, match.end())

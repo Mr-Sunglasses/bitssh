@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitssh"
-version = "2.8.0"
+version = "3.0.0"
 description = "A New and Modern SSH connector written in Python."
 readme = "README.md"
 authors = [
@@ -19,9 +19,9 @@ classifiers = [
 keywords = ["bitssh", "sshmanager", "commandline"]
 dependencies = [
     "rich",
-    "inquirer",
     "pre-commit>=3.6.0",
     "path>=16.9.0",
+    "InquirerPy>=0.3.4",
 ]
 requires-python = ">=3.9"
 
@@ -35,14 +35,8 @@ Docs = "https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md"
 [project.scripts]
 bitssh = "bitssh.__main__:main"
 
-[tool.pdm.dev-dependencies]
-dev = [
-    "pre-commit",
-    "ruff",
-]
-
 [tool.bumpver]
-current_version = "2.8.0"
+current_version = "3.0.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
@@ -53,8 +47,14 @@ push            = false
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/bitssh/__init__.py" = ["{version}"]
 
+
 [tool.pdm]
-package-type = "library"
+distribution = true
+[tool.pdm.dev-dependencies]
+dev = [
+    "pre-commit",
+    "ruff",
+]
 
 [tool.pdm.scripts]
 lint = "pre-commit run --all-files"
