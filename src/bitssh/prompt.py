@@ -1,4 +1,4 @@
-import os
+import subprocess
 from typing import Dict, List, Optional
 
 from InquirerPy import inquirer
@@ -19,13 +19,14 @@ def ask_host_prompt():
             return
 
         cmd: str = answers
-        cmd = cmd[7::]
-        cmd = f"ssh {cmd}"
-        os.system("cls" if os.name == "nt" else "clear")
+        _cmd_exec_data = cmd[7::]  # clean the data from answers
+        subprocess.run(["clear"], check=True)
         console.print(
             "Please Wait While Your System is Connecting to the Remote Server 🖥️",
             style="green",
         )
-        os.system(cmd)
+        subprocess.run(["ssh", _cmd_exec_data], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e.stderr}")
     except Exception as Error:
         print(f"\nInterrupted by {Error}")
