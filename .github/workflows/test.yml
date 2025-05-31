@@ -7,12 +7,12 @@ on:
 
 jobs:
     build:
-  
+
       runs-on: ubuntu-latest
       strategy:
         matrix:
           python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
-  
+
       steps:
         - uses: actions/checkout@v4
         - name: Set up Python ${{ matrix.python-version }}
@@ -22,6 +22,6 @@ jobs:
         - name: Create config mock
           run: mkdir ~/.ssh && touch ~/.ssh/config
         - name: Install dependencies
-          run: pip3 install . && pip3 install pytest
+          run: pip3 install -e . && pip3 install pytest
         - name: Run Test
           run: pytest

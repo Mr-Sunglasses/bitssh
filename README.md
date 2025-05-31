@@ -43,7 +43,7 @@ Install from source
 
   cd bitssh
 
-  python3 -m pip3 install .
+  python3 -m pip3 install -e .
 
   bitssh
 ```

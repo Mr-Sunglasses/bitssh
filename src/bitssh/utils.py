@@ -1,62 +1,62 @@
 import os
 import re
-from typing import Dict, List, Match, Optional, Pattern, Tuple
+from typing import Dict, List, Tuple
 
-from path import Path
+CONFIG_FILE_PATH: str = os.path.expanduser("~/.ssh/config")
 
 
-class ConfigPathUtility:
-    config_file_path: str = os.path.expanduser("~/.ssh/config")
-
-    @classmethod
-    def _validate_config_file(cls) -> None:
-        if not os.path.exists(cls.config_file_path):
-            raise FileNotFoundError(
-                f"Config file not found at {cls.config_file_path}. Please see the documentation for bitssh."
-            )
-
-    @classmethod
-    def get_config_content(cls) -> Dict[str, Dict[str, str]]:
-        cls._validate_config_file()
-
-        with open(cls.config_file_path, "r") as file:
-            lines = file.read()
-
-        host_pattern: Pattern[str] = re.compile(r"Host\s+(\w+)", re.MULTILINE)
-        hostname_pattern: Pattern[str] = re.compile(
-            r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE
+def _validate_config_file() -> None:
+    if not os.path.exists(CONFIG_FILE_PATH):
+        raise FileNotFoundError(
+            f"Config file not found at {CONFIG_FILE_PATH}. "
+            "Please see the documentation for bitssh."
         )
-        user_pattern: Pattern[str] = re.compile(r"User\s+(\S+)", re.MULTILINE)
 
-        host_dict: Dict[str, Dict[str, str]] = {}
-        for match in host_pattern.finditer(lines):
-            host: str = match.group(1)
-            hostname_match: Optional[Match[str]] = hostname_pattern.search(
-                lines, match.end()
-            )
-            hostname: str = hostname_match.group(1) if hostname_match else host
 
-            user_match: Optional[Match[str]] = user_pattern.search(lines, match.end())
-            user: Optional[str] = user_match.group(1) if user_match else None
+def get_config_content():
+    _validate_config_file()
 
-            host_dict[host]: Dict[str, str] = {
-                "Hostname": hostname,
-                "User": user,
-            }
+    with open(CONFIG_FILE_PATH, "r") as file:
+        lines = file.read()
 
-        return host_dict
+    host_pattern = re.compile(r"Host\s+(\w+)", re.MULTILINE)
+    hostname_pattern = re.compile(r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE)
+    user_pattern = re.compile(r"User\s+(\S+)", re.MULTILINE)
+    port_pattern = re.compile(r"port\s+(\d+)", re.MULTILINE | re.IGNORECASE)
 
-    @classmethod
-    def get_config_file_row_data(cls) -> List[Tuple[str, str, str, str]]:
-        config_content = cls.get_config_content()
+    host_dict = {}
+    for match in host_pattern.finditer(lines):
+        host = match.group(1)
+        host_end = match.end()
 
-        rows: List[Tuple[str, str, str, str]] = [
-            (attributes["Hostname"], host, "22", attributes["User"])
-            for host, attributes in config_content.items()
-        ]
+        hostname_match = hostname_pattern.search(lines, host_end)
+        hostname = hostname_match.group(1) if hostname_match else host
 
-        return rows
+        user_match = user_pattern.search(lines, host_end)
+        user = user_match.group(1) if user_match else None
 
-    @classmethod
-    def get_config_file_host_data(cls) -> List[str]:
-        return [f"🖥️  -> {host[1]}" for host in cls.get_config_file_row_data()]
+        port_match = port_pattern.search(lines, host_end)
+        port = port_match.group(1) if port_match else "22"
+
+        host_dict[host] = {
+            "Hostname": hostname,
+            "User": user,
+            "Port": port,
+        }
+
+    return host_dict
+
+
+def get_config_file_row_data():
+    config_content = get_config_content()
+    rows = []
+    for host, attributes in config_content.items():
+        hostname = attributes["Hostname"]
+        user = attributes["User"]
+        port = attributes["Port"]
+        rows.append((hostname, host, port, user))
+    return rows
+
+
+def get_config_file_host_data() -> List[str]:
+    return [f"🖥️  -> {row[1]}" for row in get_config_file_row_data()]
