@@ -23,8 +23,8 @@ Host testHost2
     def test_get_config_content_success(self, mock_exists) -> None:
         with patch("builtins.open", mock_open(read_data=self.mock_config_data)):
             expected: Dict[str, Dict[str, str]] = {
-                "testHost1": {"Hostname": "test.hostname1.com", "User": "testUser1"},
-                "testHost2": {"Hostname": "test.hostname2.com", "User": "testUser2"},
+                "testHost1": {"Hostname": "test.hostname1.com", "User": "testUser1", "Port": "22"},
+                "testHost2": {"Hostname": "test.hostname2.com", "User": "testUser2", "Port": "22"},
             }
             result = get_config_content()
             self.assertEqual(result, expected)

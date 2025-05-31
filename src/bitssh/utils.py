@@ -37,7 +37,7 @@ def get_config_content():
         user = user_match.group(1) if user_match else None
 
         port_match = port_pattern.search(lines, host_end)
-        port = port_match.group(1) if port_match else None
+        port = port_match.group(1) if port_match else "22"
 
         host_dict[host] = {
             "Hostname": hostname,
