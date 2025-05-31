@@ -19,7 +19,10 @@ def ask_host_prompt():
             return
 
         cmd: str = answers
-        _cmd_exec_data = cmd[7::]  # clean the data from answers
+        try:
+            _cmd_exec_data = cmd.split('-> ')[1]  # clean the data from answers
+        except IndexError:
+            raise ValueError("Invalid format: expected '-> ' delimiter in the answer.")
         if os.name == "nt":  # Windows
             subprocess.run(["cls"], shell=True, check=True)
         else:  # Unix-like systems
