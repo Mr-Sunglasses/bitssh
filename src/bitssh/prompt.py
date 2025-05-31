@@ -20,7 +20,10 @@ def ask_host_prompt():
 
         cmd: str = answers
         _cmd_exec_data = cmd[7::]  # clean the data from answers
-        subprocess.run(["clear"], check=True)
+        if os.name == "nt":  # Windows
+            subprocess.run(["cls"], shell=True, check=True)
+        else:  # Unix-like systems
+            subprocess.run(["clear"], check=True)
         console.print(
             "Please Wait While Your System is Connecting to the Remote Server 🖥️",
             style="green",
