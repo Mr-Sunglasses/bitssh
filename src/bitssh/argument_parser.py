@@ -8,6 +8,7 @@ class Config:
         )
         parser.add_argument(
             "--version",
+            "-v",
             action="store_true",
             default=False,
             help="Show the bitssh version.",
