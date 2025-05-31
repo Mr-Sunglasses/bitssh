@@ -1,6 +1,5 @@
 import os
 import re
-from pprint import pprint
 from typing import Dict, List, Tuple
 
 CONFIG_FILE_PATH: str = os.path.expanduser("~/.ssh/config")
@@ -61,6 +60,3 @@ def get_config_file_row_data():
 
 def get_config_file_host_data() -> List[str]:
     return [f"🖥️  -> {row[1]}" for row in get_config_file_row_data()]
-
-
-pprint(get_config_content())
