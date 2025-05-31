@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0.0", "wheel"]
+requires = ["setuptools>=80.9.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitssh"
-version = "3.0.0"
+version = "3.1.0"
 description = "A New and Modern SSH connector written in Python."
 readme = "README.md"
 authors = [
@@ -23,7 +23,7 @@ classifiers = [ # List of https://pypi.org/classifiers/
 ]
 keywords = ["bitssh", "sshmanager", "commandline"]
 dependencies = [
-    "rich",
+    "rich>=14.0.0",
     "pre-commit>=3.6.0",
     "path>=16.9.0",
     "InquirerPy>=0.3.4",
@@ -41,7 +41,7 @@ Docs = "https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md"
 bitssh = "bitssh.__main__:main"
 
 [tool.bumpver]
-current_version = "3.0.0"
+current_version = "3.1.0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message  = "Bump version {old_version} -> {new_version}"
 commit          = true
