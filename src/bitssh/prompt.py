@@ -9,12 +9,12 @@ from .utils import get_config_file_host_data
 
 def ask_host_prompt():
     HOST: List[str] = get_config_file_host_data()
-    questions: List[List] = inquirer.fuzzy(
+    questions = inquirer.fuzzy(
         message="Select the Host Given in the Above List: ",
         choices=HOST,
     )
     try:
-        answers: Optional[Dict[str, str]] = questions.execute()
+        answers = questions.execute()
         if answers is None:
             return
 

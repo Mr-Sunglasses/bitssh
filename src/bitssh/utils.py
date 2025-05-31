@@ -1,5 +1,6 @@
 import os
 import re
+from pprint import pprint
 from typing import Dict, List, Tuple
 
 CONFIG_FILE_PATH: str = os.path.expanduser("~/.ssh/config")
@@ -13,7 +14,7 @@ def _validate_config_file() -> None:
         )
 
 
-def get_config_content() -> Dict[str, Dict[str, str]]:
+def get_config_content():
     _validate_config_file()
 
     with open(CONFIG_FILE_PATH, "r") as file:
@@ -22,8 +23,9 @@ def get_config_content() -> Dict[str, Dict[str, str]]:
     host_pattern = re.compile(r"Host\s+(\w+)", re.MULTILINE)
     hostname_pattern = re.compile(r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE)
     user_pattern = re.compile(r"User\s+(\S+)", re.MULTILINE)
+    port_pattern = re.compile(r"port\s+(\d+)", re.MULTILINE)
 
-    host_dict: Dict[str, Dict[str, str]] = {}
+    host_dict = {}
     for match in host_pattern.finditer(lines):
         host = match.group(1)
         host_end = match.end()
@@ -34,23 +36,31 @@ def get_config_content() -> Dict[str, Dict[str, str]]:
         user_match = user_pattern.search(lines, host_end)
         user = user_match.group(1) if user_match else None
 
+        port_match = port_pattern.search(lines, host_end)
+        port = port_match.group(1) if port_match else None
+
         host_dict[host] = {
             "Hostname": hostname,
             "User": user,
+            "Port": port,
         }
 
     return host_dict
 
 
-def get_config_file_row_data() -> List[Tuple[str, str, str, str]]:
+def get_config_file_row_data():
     config_content = get_config_content()
     rows = []
     for host, attributes in config_content.items():
         hostname = attributes["Hostname"]
         user = attributes["User"]
-        rows.append((hostname, host, "22", user))
+        port = attributes["Port"]
+        rows.append((hostname, host, port, user))
     return rows
 
 
 def get_config_file_host_data() -> List[str]:
     return [f"🖥️  -> {row[1]}" for row in get_config_file_row_data()]
+
+
+pprint(get_config_content())

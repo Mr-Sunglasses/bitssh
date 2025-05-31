@@ -1,5 +1,6 @@
 from rich.console import Console
 from rich.table import Table
+
 from .utils import get_config_file_row_data
 
 console = Console()
@@ -13,6 +14,6 @@ def draw_table():
     table.add_column("User", justify="right", style="yellow")
 
     for i in get_config_file_row_data():
-        table.add_row(i[0], i[1], i[2], i[3])
+        table.add_row(i[0], i[1], "22" if i[2] is None else i[2], i[3])
 
     console.print(table)
