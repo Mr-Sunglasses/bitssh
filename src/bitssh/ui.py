@@ -4,6 +4,7 @@ from .utils import get_config_file_row_data
 
 console = Console()
 
+
 def draw_table():
     table: Table = Table(title="SSH Servers in Config File 📁")
     table.add_column("Hostname", justify="left", style="cyan", no_wrap=True)

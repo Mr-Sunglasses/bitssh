@@ -24,7 +24,7 @@ Install bitssh with docker
 
 ```bash
 
-  docker run --rm -it -v ~/.ssh:/root/.ssh mrsunglasses/bitssh	
+  docker run --rm -it -v ~/.ssh:/root/.ssh mrsunglasses/bitssh
 
 ```
 

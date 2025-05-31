@@ -1,5 +1,3 @@
-import os
-
 from bitssh import __version__
 
 from .argument_parser import Config

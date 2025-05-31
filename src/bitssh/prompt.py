@@ -6,6 +6,7 @@ from InquirerPy import inquirer
 from .ui import console
 from .utils import get_config_file_host_data
 
+
 def ask_host_prompt():
     HOST: List[str] = get_config_file_host_data()
     questions: List[List] = inquirer.fuzzy(
