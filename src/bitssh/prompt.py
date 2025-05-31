@@ -1,3 +1,4 @@
+import os
 import subprocess
 from typing import Dict, List, Optional
 
@@ -20,7 +21,7 @@ def ask_host_prompt():
 
         cmd: str = answers
         try:
-            _cmd_exec_data = cmd.split('-> ')[1]  # clean the data from answers
+            _cmd_exec_data = cmd.split("-> ")[1]  # clean the data from answers
         except IndexError:
             raise ValueError("Invalid format: expected '-> ' delimiter in the answer.")
         if os.name == "nt":  # Windows
@@ -33,6 +34,6 @@ def ask_host_prompt():
         )
         subprocess.run(["ssh", _cmd_exec_data], check=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error: {e.stderr}")
+        print(f"Error: {e.stdout}")
     except Exception as Error:
         print(f"\nInterrupted by {Error}")
