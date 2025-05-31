@@ -1,6 +1,6 @@
 from rich.console import Console
 from rich.table import Table
-from .utils import ConfigPathUtility
+from .utils import get_config_file_row_data
 
 console = Console()
 
@@ -11,7 +11,7 @@ def draw_table():
     table.add_column("Port", justify="right", style="green")
     table.add_column("User", justify="right", style="yellow")
 
-    for i in ConfigPathUtility.get_config_file_row_data():
+    for i in get_config_file_row_data():
         table.add_row(i[0], i[1], i[2], i[3])
 
     console.print(table)
