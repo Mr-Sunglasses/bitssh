@@ -22,7 +22,7 @@ def get_config_content():
     host_pattern = re.compile(r"Host\s+(\w+)", re.MULTILINE)
     hostname_pattern = re.compile(r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE)
     user_pattern = re.compile(r"User\s+(\S+)", re.MULTILINE)
-    port_pattern = re.compile(r"port\s+(\d+)", re.MULTILINE)
+    port_pattern = re.compile(r"port\s+(\d+)", re.MULTILINE | re.IGNORECASE)
 
     host_dict = {}
     for match in host_pattern.finditer(lines):
