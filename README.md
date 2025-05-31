@@ -24,7 +24,7 @@ Install bitssh with docker
 
 ```bash
 
-  docker run --rm -it -v ~/.ssh:/root/.ssh mrsunglasses/bitssh
+  docker run --rm -it -v ~/.ssh:/root/.ssh mrsunglasses/bitssh	
 
 ```
 
@@ -43,7 +43,7 @@ Install from source
 
   cd bitssh
 
-  python3 -m pip3 install .
+  python3 -m pip3 install -e .
 
   bitssh
 ```
