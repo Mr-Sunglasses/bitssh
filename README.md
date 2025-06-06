@@ -98,7 +98,7 @@ Please adhere to this project's `code of conduct`.
 
 ## 💪 Thanks to all Wonderful Contributors
 
-Thanks a lot for spending your time helping AutoType grow.
+Thanks a lot for spending your time helping bitssh grow.
 Thanks a lot! Keep rocking 🍻
 
 [![Contributors](https://contrib.rocks/image?repo=Mr-Sunglasses/bitssh)](https://github.com/Mr-Sunglasses/bitssh/graphs/contributors)
