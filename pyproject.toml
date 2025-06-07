@@ -62,4 +62,11 @@ dev = [
 ]
 
 [tool.pdm.scripts]
+test = "pytest"
+reformat = "black src/"
 lint = "pre-commit run --all-files"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
