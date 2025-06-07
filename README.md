@@ -16,7 +16,7 @@ Terminal user interface for SSH. It uses `~/.ssh/config` to list and connect to 
 
 ## Demo
 
-[![asciicast](https://asciinema.org/a/722363.svg)](https://asciinema.org/a/722363)
+<a href="https://asciinema.org/a/722363" target="_blank"><img src="https://asciinema.org/a/722363.svg" /></a>
 
 ## Installation
 
