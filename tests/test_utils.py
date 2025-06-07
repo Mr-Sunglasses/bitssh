@@ -3,7 +3,7 @@ import unittest
 from typing import Dict, List, Tuple
 from unittest.mock import mock_open, patch
 
-from bitssh.utils import (
+from src.bitssh.utils import (
     get_config_content,
     get_config_file_host_data,
     get_config_file_row_data,
