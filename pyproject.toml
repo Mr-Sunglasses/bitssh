@@ -4,57 +4,61 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bitssh"
-version = "3.1.0"
-description = "A New and Modern SSH connector written in Python."
+version = "3.2.0"
+description = "A new and modern SSH connector written in Python."
 readme = "README.md"
 authors = [
     { name = "Kanishk Pachauri", email = "itskanishkp.py@gmail.com" },
 ]
-license = {text = "MIT"}
-classifiers = [ # List of https://pypi.org/classifiers/
-  "Intended Audience :: Developers",
-  "Programming Language :: Python",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.13",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.10",
+license = { text = "MIT" }
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Environment :: Console",
+    "Topic :: System :: Shells",
+    "Topic :: Terminals",
 ]
-keywords = ["bitssh", "sshmanager", "commandline"]
+keywords = ["bitssh", "sshmanager", "commandline", "cli", "ssh"]
 dependencies = [
     "rich>=14.0.0",
-    "pre-commit>=3.6.0",
-    "path>=16.9.0",
     "InquirerPy>=0.3.4",
 ]
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-dev = ["black", "bumpver", "isort", "pip-tools", "pytest"]
+dev = ["black", "bumpver", "isort", "pytest"]
 
 [project.urls]
 Homepage = "https://github.com/Mr-Sunglasses/bitssh"
-Docs = "https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md"
+Documentation = "https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md"
+Repository = "https://github.com/Mr-Sunglasses/bitssh"
+Issues = "https://github.com/Mr-Sunglasses/bitssh/issues"
 
 [project.scripts]
 bitssh = "bitssh.__main__:main"
 
 [tool.bumpver]
-current_version = "3.1.0"
+current_version = "3.2.0"
 version_pattern = "MAJOR.MINOR.PATCH"
-commit_message  = "Bump version {old_version} -> {new_version}"
-commit          = true
-tag             = true
-push            = false
+commit_message = "Bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = false
 
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/bitssh/__init__.py" = ["{version}"]
 
-
 [tool.pdm]
 distribution = true
+
 [tool.pdm.dev-dependencies]
 dev = [
     "pre-commit",
@@ -67,6 +71,4 @@ reformat = "black src/"
 lint = "pre-commit run --all-files"
 
 [tool.pytest.ini_options]
-pythonpath = [
-  "src"
-]
+pythonpath = ["src"]
