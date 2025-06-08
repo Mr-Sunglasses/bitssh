@@ -163,3 +163,8 @@ cython_debug/
 .pytest_cache
 
 .pdm-python
+
+# Add .DS_Store files to ignore list
+#  These files are created by macOS in directories to store custom attributes of a folder
+#  such as icon position, view options, etc. They are not needed in version control.
+.DS_Store
