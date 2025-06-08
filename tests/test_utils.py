@@ -224,7 +224,7 @@ Host another_host
         with patch("builtins.open", mock_open(read_data=self.mock_config_incomplete)):
             result = get_config_content()
 
-            expected: Dict[str, Dict[str, str]] = {
+            expected = {
                 "complete_host": {
                     "Hostname": "complete.example.com",
                     "User": "complete_user",
@@ -485,37 +485,6 @@ Host complex
             self.assertEqual(result, expected)
 
     @patch("os.path.exists", return_value=True)
-    def test_config_with_wildcards(self, mock_exists) -> None:
-        """Test parsing config with wildcard hosts"""
-        wildcard_config = """
-Host *.example.com
-    User wildcard_user
-    Port 3030
-
-Host specific.example.com
-    HostName specific.example.com
-    User specific_user
-    Port 4040
-
-Host *
-    User default_user
-"""
-        with patch("builtins.open", mock_open(read_data=wildcard_config)):
-            result = get_config_content()
-
-            # Check for the actual key names that should be parsed
-            self.assertIn("*.example.com", result)
-            self.assertIn("specific.example.com", result)  # Fixed: use full hostname
-            self.assertIn("*", result)
-
-            # Verify the parsed values
-            self.assertEqual(result["*.example.com"]["User"], "wildcard_user")
-            self.assertEqual(result["*.example.com"]["Port"], "3030")
-            self.assertEqual(result["specific.example.com"]["User"], "specific_user")
-            self.assertEqual(result["specific.example.com"]["Port"], "4040")
-            self.assertEqual(result["*"]["User"], "default_user")
-
-    @patch("os.path.exists", return_value=True)
     def test_large_config_performance(self, mock_exists) -> None:
         """Test parsing a large config file"""
         large_config_parts = []
@@ -660,3 +629,188 @@ Host numbers123
             else:
                 # There might be cross-contamination between sections
                 print("Potential cross-contamination detected")
+
+    @patch("os.path.exists", return_value=True)
+    def test_basic_host_parsing(self, mock_exists):
+        """Test parsing a basic SSH config with hyphenated host names"""
+        config = """
+Host server-one
+    HostName server-one.example.com
+    User username
+    Port 22
+
+Host web-server
+    HostName web.example.com
+    User webuser
+    Port 2222
+"""
+        with patch("builtins.open", mock_open(read_data=config)):
+            result = get_config_content()
+
+            self.assertIn("server-one", result)
+            self.assertIn("web-server", result)
+
+            # Check server-one details
+            self.assertEqual(result["server-one"]["Hostname"], "server-one.example.com")
+            self.assertEqual(result["server-one"]["User"], "username")
+            self.assertEqual(result["server-one"]["Port"], "22")
+
+            # Check web-server details
+            self.assertEqual(result["web-server"]["Hostname"], "web.example.com")
+            self.assertEqual(result["web-server"]["User"], "webuser")
+            self.assertEqual(result["web-server"]["Port"], "2222")
+
+    @patch("os.path.exists", return_value=True)
+    def test_wildcard_filtering(self, mock_exists):
+        """Test that wildcard hosts are filtered out"""
+        config = """
+Host *
+    Compression yes
+    User default_user
+
+Host server-one
+    HostName server-one.example.com
+    User username
+    Port 22
+
+Host *.example.com
+    User wildcard_user
+    Port 3030
+"""
+        with patch("builtins.open", mock_open(read_data=config)):
+            result = get_config_content()
+
+            # Should only contain non-wildcard hosts
+            self.assertIn("server-one", result)
+            self.assertNotIn("*", result)
+            self.assertNotIn("*.example.com", result)
+
+            # Should have only one entry
+            self.assertEqual(len(result), 1)
+
+            # Check that server-one is parsed correctly
+            self.assertEqual(result["server-one"]["Hostname"], "server-one.example.com")
+            self.assertEqual(result["server-one"]["User"], "username")
+            self.assertEqual(result["server-one"]["Port"], "22")
+
+    @patch("os.path.exists", return_value=True)
+    def test_mixed_wildcard_and_specific_hosts(self, mock_exists):
+        """Test parsing config with mix of wildcard and specific hosts"""
+        config = """
+Host *
+    Compression yes
+
+Host *.dev
+    User dev_user
+
+Host server-one
+    HostName server-one.example.com
+    User username
+    Port 22
+
+Host db-server
+    HostName db.example.com
+    User dbuser
+
+Host *.test.com
+    User test_user
+"""
+        with patch("builtins.open", mock_open(read_data=config)):
+            result = get_config_content()
+
+            # Should only contain specific hosts, no wildcards
+            expected_hosts = {"server-one", "db-server"}
+            actual_hosts = set(result.keys())
+            self.assertEqual(actual_hosts, expected_hosts)
+
+            # Verify no wildcard entries
+            for host in result.keys():
+                self.assertNotIn("*", host)
+
+    @patch("os.path.exists", return_value=True)
+    def test_complex_hostnames(self, mock_exists):
+        """Test parsing hosts with various character patterns"""
+        config = """
+Host my-server.prod
+    HostName my-server.prod.example.com
+    User prod_user
+    Port 443
+
+Host test_server_01
+    HostName 192.168.1.100
+    User testuser
+    Port 2222
+
+Host staging-web-01
+    HostName staging-web-01.internal
+    User deploy
+"""
+        with patch("builtins.open", mock_open(read_data=config)):
+            result = get_config_content()
+
+            expected_hosts = {"my-server.prod", "test_server_01", "staging-web-01"}
+            actual_hosts = set(result.keys())
+            self.assertEqual(actual_hosts, expected_hosts)
+
+            # Check specific details
+            self.assertEqual(result["my-server.prod"]["Port"], "443")
+            self.assertEqual(result["test_server_01"]["Hostname"], "192.168.1.100")
+            self.assertEqual(result["staging-web-01"]["User"], "deploy")
+
+    @patch("os.path.exists", return_value=True)
+    def test_commented_lines_ignored(self, mock_exists):
+        """Test that commented lines are properly ignored"""
+        config = """
+# Global settings
+Host *
+    Compression yes
+
+# Production server
+Host server-one
+    HostName server-one.example.com
+    User username
+    # Port 2222  # Commented out port
+    Port 22
+
+# Host commented-out-server
+#     HostName should-not-appear.com
+"""
+        with patch("builtins.open", mock_open(read_data=config)):
+            result = get_config_content()
+
+            # Should only have server-one
+            self.assertEqual(list(result.keys()), ["server-one"])
+            self.assertEqual(
+                result["server-one"]["Port"], "22"
+            )  # Should use uncommented port
+
+    @patch("os.path.exists", return_value=True)
+    def test_default_values(self, mock_exists):
+        """Test default values are applied correctly"""
+        config = """
+Host minimal-server
+    HostName minimal.example.com
+    # No user or port specified
+
+Host partial-server
+    User partial_user
+    # No hostname or port specified
+"""
+        with patch("builtins.open", mock_open(read_data=config)):
+            result = get_config_content()
+
+            # Check minimal-server defaults
+            self.assertEqual(
+                result["minimal-server"]["Hostname"], "minimal.example.com"
+            )
+            self.assertEqual(
+                result["minimal-server"]["User"], None
+            )  # No user specified
+            self.assertEqual(result["minimal-server"]["Port"], "22")  # Default port
+
+            # Check partial-server defaults
+            self.assertEqual(
+                result["partial-server"]["Hostname"], "partial-server"
+            )  # Defaults to host name
+            self.assertEqual(result["partial-server"]["User"], "partial_user")
+            self.assertEqual(result["partial-server"]["Port"], "22")  # Default port
