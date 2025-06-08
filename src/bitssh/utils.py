@@ -44,6 +44,10 @@ def get_config_content():
     for i, match in enumerate(host_matches):
         host = match.group(1)
 
+        # Skip wildcard entries (*, *.example.com, etc.) as they're not connection targets
+        if "*" in host:
+            continue
+
         # Find the end of this host section (start of next host or end of content)
         if i + 1 < len(host_matches):
             host_section_end = host_matches[i + 1].start()
