@@ -15,27 +15,51 @@ def _validate_config_file() -> None:
 
 def get_config_content():
     _validate_config_file()
-
-    with open(CONFIG_FILE_PATH, "r") as file:
+    with open(CONFIG_FILE_PATH, "r", encoding="utf-8") as file:
         lines = file.read()
 
-    host_pattern = re.compile(r"Host\s+(\w+)", re.MULTILINE)
-    hostname_pattern = re.compile(r"(?:HostName|Hostname)\s+(\S+)", re.MULTILINE)
-    user_pattern = re.compile(r"User\s+(\S+)", re.MULTILINE)
-    port_pattern = re.compile(r"port\s+(\d+)", re.MULTILINE | re.IGNORECASE)
+    # Remove commented lines and empty lines
+    filtered_lines = []
+    for line in lines.split("\n"):
+        stripped_line = line.strip()
+        if stripped_line and not stripped_line.startswith("#"):
+            filtered_lines.append(line)
+
+    filtered_content = "\n".join(filtered_lines)
+
+    # Case-insensitive patterns - make sure all are properly case-insensitive
+    host_pattern = re.compile(r"^Host\s+(\w+)", re.MULTILINE | re.IGNORECASE)
+    hostname_pattern = re.compile(
+        r"^\s*(?:HostName|Hostname)\s+(\S+)", re.MULTILINE | re.IGNORECASE
+    )
+    user_pattern = re.compile(r"^\s*User\s+(\S+)", re.MULTILINE | re.IGNORECASE)
+    port_pattern = re.compile(r"^\s*port\s+(\d+)", re.MULTILINE | re.IGNORECASE)
 
     host_dict = {}
-    for match in host_pattern.finditer(lines):
-        host = match.group(1)
-        host_end = match.end()
 
-        hostname_match = hostname_pattern.search(lines, host_end)
+    # Find all host matches first
+    host_matches = list(host_pattern.finditer(filtered_content))
+
+    for i, match in enumerate(host_matches):
+        host = match.group(1)
+
+        # Find the end of this host section (start of next host or end of content)
+        if i + 1 < len(host_matches):
+            host_section_end = host_matches[i + 1].start()
+        else:
+            host_section_end = len(filtered_content)
+
+        # Extract only this host's section (from end of Host line to start of next Host)
+        host_section = filtered_content[match.end() : host_section_end]
+
+        # Search within this host section only
+        hostname_match = hostname_pattern.search(host_section)
         hostname = hostname_match.group(1) if hostname_match else host
 
-        user_match = user_pattern.search(lines, host_end)
+        user_match = user_pattern.search(host_section)
         user = user_match.group(1) if user_match else None
 
-        port_match = port_pattern.search(lines, host_end)
+        port_match = port_pattern.search(host_section)
         port = port_match.group(1) if port_match else "22"
 
         host_dict[host] = {
@@ -59,4 +83,5 @@ def get_config_file_row_data():
 
 
 def get_config_file_host_data() -> List[str]:
+    return [f"🖥️  -> {row[1]}" for row in get_config_file_row_data()]
     return [f"🖥️  -> {row[1]}" for row in get_config_file_row_data()]
