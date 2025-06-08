@@ -503,11 +503,17 @@ Host *
         with patch("builtins.open", mock_open(read_data=wildcard_config)):
             result = get_config_content()
 
-            # Behavior depends on regex pattern - \w+ might not match wildcards
-            # Adjust expectations based on actual implementation
-            self.assertIn("specific", result)
-            if "specific" in result:
-                self.assertEqual(result["specific"]["User"], "specific_user")
+            # Check for the actual key names that should be parsed
+            self.assertIn("*.example.com", result)
+            self.assertIn("specific.example.com", result)  # Fixed: use full hostname
+            self.assertIn("*", result)
+
+            # Verify the parsed values
+            self.assertEqual(result["*.example.com"]["User"], "wildcard_user")
+            self.assertEqual(result["*.example.com"]["Port"], "3030")
+            self.assertEqual(result["specific.example.com"]["User"], "specific_user")
+            self.assertEqual(result["specific.example.com"]["Port"], "4040")
+            self.assertEqual(result["*"]["User"], "default_user")
 
     @patch("os.path.exists", return_value=True)
     def test_large_config_performance(self, mock_exists) -> None:

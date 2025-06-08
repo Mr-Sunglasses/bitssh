@@ -28,7 +28,8 @@ def get_config_content():
     filtered_content = "\n".join(filtered_lines)
 
     # Case-insensitive patterns - make sure all are properly case-insensitive
-    host_pattern = re.compile(r"^Host\s+(\w+)", re.MULTILINE | re.IGNORECASE)
+    # Fixed: Use \S+ instead of \w+ to match non-whitespace characters (includes hyphens, dots, etc.)
+    host_pattern = re.compile(r"^Host\s+(\S+)", re.MULTILINE | re.IGNORECASE)
     hostname_pattern = re.compile(
         r"^\s*(?:HostName|Hostname)\s+(\S+)", re.MULTILINE | re.IGNORECASE
     )
@@ -83,5 +84,4 @@ def get_config_file_row_data():
 
 
 def get_config_file_host_data() -> List[str]:
-    return [f"🖥️  -> {row[1]}" for row in get_config_file_row_data()]
     return [f"🖥️  -> {row[1]}" for row in get_config_file_row_data()]
