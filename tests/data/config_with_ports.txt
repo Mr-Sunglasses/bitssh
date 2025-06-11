@@ -1,0 +1,14 @@
+Host server1
+    HostName 192.168.1.100
+    User admin
+    Port 2222
+
+Host server2
+    HostName example.com
+    User root
+    Port 443
+
+# Commented host should be ignored
+# Host commented_host
+#     HostName should.not.appear.com
+#     User ignored_user

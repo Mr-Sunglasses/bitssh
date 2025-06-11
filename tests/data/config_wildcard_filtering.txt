@@ -1,0 +1,12 @@
+Host *
+    Compression yes
+    User default_user
+
+Host server-one
+    HostName server-one.example.com
+    User username
+    Port 22
+
+Host *.example.com
+    User wildcard_user
+    Port 3030

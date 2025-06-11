@@ -1,0 +1,9 @@
+Host good_host
+    HostName good.example.com
+    User good_user
+
+This is not a valid config line
+Host another_host
+    HostName another.example.com
+    InvalidDirective this_should_be_ignored
+    User another_user

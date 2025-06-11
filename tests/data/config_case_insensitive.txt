@@ -1,0 +1,14 @@
+Host test1
+    HostName test1.com
+    User test1user
+    Port 1111
+
+Host test2
+    HostName test2.com
+    User test2user
+    port 2222
+
+Host test3
+    HostName test3.com
+    User test3user
+    PORT 3333

@@ -1,0 +1,3 @@
+# This is just a comment file
+# No actual hosts defined
+# Host fake_host (this is still a comment)

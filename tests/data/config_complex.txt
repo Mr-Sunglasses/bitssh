@@ -1,0 +1,9 @@
+Host complex
+    HostName complex.example.com
+    User complex_user
+    Port 2020
+    IdentityFile ~/.ssh/id_rsa
+    ForwardAgent yes
+    LocalForward 8080 localhost:80
+    ProxyCommand ssh proxy.example.com -W %h:%p
+    ServerAliveInterval 60

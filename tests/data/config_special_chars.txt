@@ -1,0 +1,9 @@
+Host special-chars_123
+    HostName special-chars.example.com
+    User user-with_underscores
+    Port 9999
+
+Host numbers123
+    HostName 10.0.0.1
+    User user123
+    Port 22

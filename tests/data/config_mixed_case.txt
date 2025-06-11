@@ -1,0 +1,9 @@
+Host MixedCase
+    hostname mixed.case.com
+    user mixeduser
+    port 3333
+
+Host lowercase
+    HOSTNAME UPPER.CASE.COM
+    USER UPPERUSER
+    PORT 4444
