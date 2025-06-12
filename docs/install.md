@@ -61,6 +61,6 @@ You can check the [OpenBSD `ssh_config` reference](https://man.openbsd.org/ssh_c
 [Usage](usage.md)
 
 
-## Docs
+## Docs Homepage
 
 [Docs](docs.md)
