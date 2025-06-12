@@ -1,4 +1,8 @@
-# Usuage
+# Usage
+
+## Demo
+
+<a href="https://asciinema.org/a/722363" target="_blank"><img src="https://asciinema.org/a/722363.svg" /></a>
 
 ## To learn More about ssh's and it's config, Please Reference to this Video.
 
@@ -12,8 +16,6 @@
 
 [Installation](install.md)
 
-<hr>
-
-## Docs
+## Docs Homepage
 
 [Docs](docs.md)
