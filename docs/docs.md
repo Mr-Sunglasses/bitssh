@@ -1,15 +1,11 @@
 # Docs
 
-<p align="center">
-    <img src="https://i.ibb.co/nrM5mzD/bitssh-logo-new.jpg" width="320" height="220">
-</p>
+<a href="https://asciinema.org/a/722363" target="_blank"><img src="https://asciinema.org/a/722363.svg" /></a>
 
-<hr>
 ## Installation Docs
 
 [Installation](install.md)
 
-<hr>
 ## Usage Docs
 
 [Usage](usage.md)
