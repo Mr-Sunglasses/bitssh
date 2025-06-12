@@ -1,0 +1,14 @@
+Host indented1
+        HostName deeply.indented.com
+        User indented_user
+        Port 5555
+
+Host indented2
+    HostName normal.indent.com
+    User normal_user
+        Port 6666
+
+Host mixed_indent
+HostName no.indent.com
+    User some_indent
+        Port 7777

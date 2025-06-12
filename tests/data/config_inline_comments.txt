@@ -1,0 +1,11 @@
+Host inline_test  # This is an inline comment
+    HostName inline.example.com  # Another comment
+    User inline_user  # User comment
+    Port 5050  # Port comment
+
+# Production server
+Host server-one
+    HostName server-one.example.com
+    User username
+    # Port 1234  # Commented out port
+    Port 56

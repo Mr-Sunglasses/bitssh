@@ -1,0 +1,17 @@
+Host complete_host
+    HostName complete.example.com
+    User complete_user
+    Port 8080
+
+Host hostname_only
+    HostName hostname.only.com
+
+Host user_only
+    User user_only_user
+
+Host minimal_host
+
+# Empty host block
+Host empty_host
+    # Just comments
+    # No actual config

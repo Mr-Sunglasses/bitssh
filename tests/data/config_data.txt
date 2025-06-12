@@ -1,0 +1,16 @@
+# server-one
+Host testHost1
+    # server-one Hostname
+    HostName test.hostname1.com
+    # server-one User
+    User testUser1
+    # server-one Port
+    Port 22
+# server-two
+Host testHost2
+    # server-two Hostname
+    Hostname test.hostname2.com
+    # server-two User
+    User testUser2
+    # server-two Port
+    Port 2222

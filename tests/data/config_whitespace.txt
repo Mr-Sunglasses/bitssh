@@ -1,0 +1,9 @@
+Host   whitespace_test   
+    HostName     whitespace.example.com   
+    User   whitespace_user   
+    Port   8888   
+
+Host	tab_test
+	HostName	tab.example.com
+	User	tab_user
+	Port	9999

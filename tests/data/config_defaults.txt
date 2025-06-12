@@ -1,0 +1,7 @@
+Host minimal-server
+    HostName minimal.example.com
+    # No user or port specified
+
+Host partial-server
+    User partial_user
+    # No hostname or port specified

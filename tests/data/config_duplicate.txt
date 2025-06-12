@@ -1,0 +1,9 @@
+Host duplicate
+    HostName first.example.com
+    User first_user
+    Port 1111
+
+Host duplicate
+    HostName second.example.com
+    User second_user
+    Port 2222
