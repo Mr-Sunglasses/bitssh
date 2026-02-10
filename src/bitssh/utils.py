@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 CONFIG_FILE_PATH: str = os.path.expanduser("~/.ssh/config")
 
@@ -8,9 +8,20 @@ CONFIG_FILE_PATH: str = os.path.expanduser("~/.ssh/config")
 def _validate_config_file() -> None:
     if not os.path.exists(CONFIG_FILE_PATH):
         raise FileNotFoundError(
-            f"Config file not found at {CONFIG_FILE_PATH}. "
-            "Please see the documentation for bitssh."
+            f"Config file not found at {CONFIG_FILE_PATH}.\n"
+            "Run 'bitssh add' to add a new SSH host and create the config file."
         )
+
+
+def _ensure_config_file() -> None:
+    """Ensure the SSH config file and its parent directory exist."""
+    ssh_dir = os.path.dirname(CONFIG_FILE_PATH)
+    if not os.path.exists(ssh_dir):
+        os.makedirs(ssh_dir, mode=0o700, exist_ok=True)
+    if not os.path.exists(CONFIG_FILE_PATH):
+        with open(CONFIG_FILE_PATH, "w", encoding="utf-8") as f:
+            f.write("")
+        os.chmod(CONFIG_FILE_PATH, 0o644)
 
 
 def get_config_content():
@@ -89,3 +100,55 @@ def get_config_file_row_data():
 
 def get_config_file_host_data() -> List[str]:
     return [f"🖥️  -> {row[1]}" for row in get_config_file_row_data()]
+
+
+def host_exists(host: str) -> bool:
+    """Check if a host alias already exists in the SSH config."""
+    try:
+        config = get_config_content()
+        return host in config
+    except FileNotFoundError:
+        return False
+
+
+def write_host_to_config(
+    host: str,
+    hostname: str,
+    user: Optional[str] = None,
+    port: Optional[int] = None,
+    identity_file: Optional[str] = None,
+) -> None:
+    """Append a new host entry to the SSH config file.
+
+    Args:
+        host: The alias/name for the SSH host (e.g. myserver).
+        hostname: The hostname or IP address (e.g. 192.168.1.1).
+        user: The username to connect as (e.g. root).
+        port: The port number (default: 22).
+        identity_file: Path to the private key file.
+
+    Raises:
+        ValueError: If the host alias already exists in the config.
+    """
+    _ensure_config_file()
+
+    if host_exists(host):
+        raise ValueError(
+            f"Host '{host}' already exists in {CONFIG_FILE_PATH}. "
+            "Please choose a different alias or edit the config manually."
+        )
+
+    # Build the config block
+    lines = [f"\nHost {host}"]
+    lines.append(f"    HostName {hostname}")
+    if user:
+        lines.append(f"    User {user}")
+    if port and port != 22:
+        lines.append(f"    Port {port}")
+    if identity_file:
+        lines.append(f"    IdentityFile {identity_file}")
+
+    block = "\n".join(lines) + "\n"
+
+    with open(CONFIG_FILE_PATH, "a", encoding="utf-8") as f:
+        f.write(block)
