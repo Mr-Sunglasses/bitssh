@@ -186,6 +186,9 @@ The project includes a `Makefile` with convenient commands for common developmen
 | `make check` | Run lint + test (full CI check) |
 | `make run` | Run bitssh CLI |
 | `make build` | Build distribution packages |
+| `make bumpver-patch` | Bump patch version (e.g. 3.7.0 → 3.7.1) |
+| `make bumpver-minor` | Bump minor version (e.g. 3.7.0 → 3.8.0) |
+| `make bumpver-major` | Bump major version (e.g. 3.7.0 → 4.0.0) |
 | `make clean` | Remove build artifacts, caches, and venv |
 
 ## Styleguides
@@ -222,3 +225,31 @@ Examples:
 - `fix(utils): handle missing SSH config gracefully`
 - `docs: update installation instructions`
 - `test(cli): add tests for argument parsing`
+
+### Version Bumping
+
+This project uses [bumpver](https://github.com/mbarkhau/bumpver) for version management. The version is defined in a single place — `src/bitssh/_version.py` — and everything else reads from it:
+
+| File | What it does |
+|---|---|
+| `src/bitssh/_version.py` | Single source of truth: `__version__ = "3.7.0"` |
+| `pyproject.toml` → `[tool.setuptools.dynamic]` | Reads version from `_version.py` at build time |
+| `pyproject.toml` → `[tool.bumpver]` | Tracks the current version for bumpver CLI |
+| `src/bitssh/__init__.py` | Imports `__version__` from `_version.py`, overrides with `importlib.metadata` at runtime |
+
+To bump the version, use one of these make commands:
+
+```bash
+make bumpver-patch   # 3.7.0 → 3.7.1
+make bumpver-minor   # 3.7.0 → 3.8.0
+make bumpver-major   # 3.7.0 → 4.0.0
+```
+
+Each command will:
+
+1. Update `__version__` in `src/bitssh/_version.py`
+2. Update `current_version` in `pyproject.toml` `[tool.bumpver]`
+3. Create a git commit with the message `"Bump version {old} -> {new}"`
+4. Create a git tag (e.g. `v3.7.1`)
+
+> **Note:** bumpver does **not** push to remote by default (`push = false`). You need to `git push && git push --tags` manually when ready.

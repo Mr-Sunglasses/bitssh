@@ -2,9 +2,15 @@
 requires = ["setuptools>=80.9.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.dynamic]
+version = {attr = "bitssh._version.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [project]
 name = "bitssh"
-version = "3.7.0"
+dynamic = ["version"]
 description = "A new and modern SSH connector written in Python."
 readme = "README.md"
 license = "MIT"
@@ -61,7 +67,8 @@ tag = true
 push = false
 
 [tool.bumpver.file_patterns]
-"pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
+"src/bitssh/_version.py" = ['__version__ = "{version}"']
+"pyproject.toml" = ['current_version = "{version}"']
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

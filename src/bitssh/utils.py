@@ -21,7 +21,7 @@ def _ensure_config_file() -> None:
     if not os.path.exists(CONFIG_FILE_PATH):
         with open(CONFIG_FILE_PATH, "w", encoding="utf-8") as f:
             f.write("")
-        os.chmod(CONFIG_FILE_PATH, 0o644)
+        os.chmod(CONFIG_FILE_PATH, 0o600)
 
 
 def get_config_content():
