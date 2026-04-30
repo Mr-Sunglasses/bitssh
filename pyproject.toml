@@ -59,7 +59,7 @@ Changelog = "https://github.com/Mr-Sunglasses/bitssh/releases"
 bitssh = "bitssh.__main__:main"
 
 [tool.bumpver]
-current_version = "3.7.0"
+current_version = "3.7.1"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "Bump version {old_version} -> {new_version}"
 commit = true
