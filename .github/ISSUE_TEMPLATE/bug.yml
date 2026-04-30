@@ -1,50 +1,125 @@
 name: Bug Report
-description: File a bug report
+description: Report a bug or unexpected behavior in bitssh
 title: "[Bug]: "
 labels: ["bug", "triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
-  - type: input
-    id: contact
-    attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
-    validations:
-      required: false
+        Thanks for reporting a bug! Please fill out the sections below to help us reproduce and fix the issue.
   - type: textarea
-    id: what-happened
+    id: description
     attributes:
-      label: What happened?
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: "e.g. When I select a host from the TUI, the connection fails with..."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce this behavior?
+      placeholder: |
+        1. Run `bitssh`
+        2. Select host 'xyz'
+        3. Press Enter
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: "e.g. I expected bitssh to connect to the selected host"
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: "e.g. Connection timed out, error message shown, etc."
+    validations:
+      required: true
+  - type: input
+    id: bitssh-version
+    attributes:
+      label: bitssh Version
+      description: What version of bitssh are you running?
+      placeholder: "e.g. 3.7.0 (run `pip show bitssh` or `bitssh --version` or check pyproject.toml)"
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python Version
+      description: What version of Python are you using?
+      placeholder: "e.g. 3.12.1 (run `python --version`)"
     validations:
       required: true
   - type: dropdown
-    id: Operating System's
+    id: os
     attributes:
-      label: What OS are you seeing the problem on?
-      multiple: true
+      label: Operating System
+      description: What OS are you running bitssh on?
       options:
-        - linux
-        - windows
-        - Macos
+        - Linux
+        - macOS
+        - Windows (WSL)
+        - Windows (Native)
         - Other
+    validations:
+      required: true
+  - type: input
+    id: terminal
+    attributes:
+      label: Terminal Emulator
+      description: Which terminal emulator are you using?
+      placeholder: "e.g. iTerm2, GNOME Terminal, Windows Terminal, Alacritty"
+    validations:
+      required: false
+  - type: textarea
+    id: ssh-config
+    attributes:
+      label: SSH Config (Sanitized)
+      description: |
+        Please share a sanitized version of your `~/.ssh/config` if relevant to the bug.
+        **IMPORTANT: Remove or redact any hostnames, IP addresses, usernames, and keys before sharing!**
+      placeholder: |
+        Host myserver
+            Hostname xxx.xx.xx.xx
+            User myuser
+            Port 22
+      render: shell
+    validations:
+      required: false
   - type: textarea
     id: logs
     attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      label: Relevant Log Output
+      description: Please copy and paste any relevant log output or traceback. This will be automatically formatted as code.
+      placeholder: "Paste the full traceback or error output here"
       render: shell
+    validations:
+      required: false
+  - type: checkboxes
+    id: pre-checks
+    attributes:
+      label: Pre-submission Checks
+      options:
+        - label: I am running the latest version of bitssh
+          required: false
+        - label: I have checked that a similar issue does not already exist
+          required: true
+        - label: My `~/.ssh/config` file exists and is properly formatted
+          required: false
   - type: checkboxes
     id: terms
     attributes:
       label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/FOSS-Community/website-fossc/blob/main/CODE_OF_CONDUCT.md)
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Mr-Sunglasses/bitssh/blob/main/CODE_OF_CONDUCT.md)
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true

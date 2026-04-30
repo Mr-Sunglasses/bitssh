@@ -1,41 +1,71 @@
-name: Feature request
-description: Suggest an idea for this project
-title: "[Feature] <title>"
-labels: "feature"
-
+name: Feature Request
+description: Suggest a new feature or enhancement for bitssh
+title: "[Feature]: "
+labels: ["feature"]
 body:
   - type: markdown
     attributes:
-      value: Is your feature request related to a problem? Please describe.
+      value: |
+        Thanks for suggesting a feature! Please describe your idea clearly so we can evaluate it.
   - type: textarea
+    id: problem
     attributes:
-      label: Describe the feature you'd like to request
-      description: A clear and concise description of what the problem is.
-      placeholder : |
-        Ex. I'm always frustrated when [...]
+      label: Problem / Use Case
+      description: What problem does this feature solve? What's your workflow that could be improved?
+      placeholder: |
+        e.g. I manage many SSH hosts and it's hard to find the one I need in the TUI list...
     validations:
       required: true
   - type: textarea
+    id: solution
     attributes:
-      label: Describe the solution you'd like
-      description: A clear and concise description of what you want to happen.
-      placeholder : |
-        Ex. I want the solution like [...]
+      label: Proposed Solution
+      description: Describe the feature or behavior you'd like to see.
+      placeholder: |
+        e.g. Add a search/filter feature to the TUI so users can quickly find a host by name...
+    validations:
+      required: true
+  - type: dropdown
+    id: feature-area
+    attributes:
+      label: Feature Area
+      description: Which part of bitssh does this feature relate to?
+      options:
+        - TUI (Terminal User Interface)
+        - SSH Connection Handling
+        - SSH Config Parsing
+        - CLI Arguments / Options
+        - Installation / Packaging
+        - Documentation
+        - Other
     validations:
       required: true
   - type: textarea
+    id: alternatives
     attributes:
-      label: Describe alternatives you've considered
-      description: A clear and concise description of any alternative solutions or features you've considered.
-      placeholder : |
-        Ex. I want to extend the function A by adding someting more
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: |
+        e.g. I currently use `grep` on my SSH config, but it would be much nicer to have this built into bitssh...
     validations:
       required: false
   - type: textarea
+    id: additional-context
     attributes:
-      label: Additional context
-      description: Add any other context or screenshots about the feature request here.
-      placeholder : |
-        context, screenshots, related links , etc.
+      label: Additional Context
+      description: Add any screenshots, mockups, or references to similar features in other tools.
+      placeholder: |
+        e.g. Similar to how `sshmenu` or `sshrc` handles host selection...
     validations:
       required: false
+  - type: checkboxes
+    id: pre-checks
+    attributes:
+      label: Pre-submission Checks
+      options:
+        - label: I have checked that this feature does not already exist in bitssh
+          required: true
+        - label: I have searched existing issues to ensure this hasn't been requested before
+          required: true
+        - label: This feature would benefit most bitssh users, not just me
+          required: false
