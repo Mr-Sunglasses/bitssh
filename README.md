@@ -24,8 +24,13 @@ Install bitssh with docker
 
 ```bash
 
-  docker run --rm -it -v ~/.ssh:/root/.ssh mrsunglasses/bitssh	
+  docker run --rm -it -v ~/.ssh:/root/.ssh mrsunglasses/bitssh:latest	
 
+```
+
+Install bitssh with uv (recommended)
+```
+  uv tool install bitssh
 ```
 
 Install bitssh with pip
@@ -48,9 +53,86 @@ Install from source
   bitssh
 ```
 
-# Troubleshooting
+## Usage
 
-## [...]/.ssh/config: no such file or directory
+### Connecting to a Host
+
+Simply run bitssh to see all your SSH hosts and connect to one:
+
+```bash
+bitssh
+```
+
+This displays a table of all hosts from `~/.ssh/config` and launches a fuzzy search prompt to select a host. Once selected, bitssh opens an SSH connection to that host.
+
+### Check Version
+
+```bash
+bitssh -v
+bitssh --version
+```
+
+### Adding a Host
+
+**Interactive mode** (guided prompts):
+
+```bash
+bitssh add
+```
+
+**Non-interactive mode** (CLI flags):
+
+```bash
+bitssh add --host myserver --hostname 192.168.1.1
+bitssh add --host myserver --hostname 192.168.1.1 --user root --port 2222
+bitssh add --host myserver --hostname 192.168.1.1 --user admin --identity-file ~/.ssh/id_rsa
+```
+
+| Flag | Description |
+|---|---|
+| `--host` | Alias for the SSH connection (required) |
+| `--hostname` | IP address or domain (required) |
+| `--user` | Login username |
+| `--port` | SSH port (default: 22) |
+| `--identity-file` | Path to private key file |
+
+### Removing a Host
+
+**Interactive mode** (multi-select prompt):
+
+```bash
+bitssh remove
+```
+
+**Non-interactive mode** (specify one or more hosts):
+
+```bash
+bitssh remove --host myserver
+bitssh remove --host srv1 srv2
+```
+
+### SSH Config Reference
+
+bitssh reads hosts from `~/.ssh/config`. Example configuration:
+
+```ssh-config
+Host myserver
+    Hostname 192.168.1.1
+    User admin
+    Port 22
+
+Host production
+    Hostname ec2-xxx-xxx-xxx-xxx.compute-1.amazonaws.com
+    User ubuntu
+    Port 22
+    IdentityFile ~/.ssh/aws-key.pem
+```
+
+See the [OpenBSD `ssh_config` reference](https://man.openbsd.org/ssh_config.5) for all available options.
+
+## Troubleshooting
+
+``` [...]/.ssh/config: no such file or directory ```
 
 - Check if you have `~/.ssh/config` file
 - If you don't, create it with `touch ~/.ssh/config`
@@ -84,9 +166,9 @@ You can check the [OpenBSD `ssh_config` reference](https://man.openbsd.org/ssh_c
 
 Contributions are always welcome!
 
-See `contributing.md` for ways to get started.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for ways to get started.
 
-Please adhere to this project's `code of conduct`.
+Please adhere to this project's [code of conduct](./CODE_OF_CONDUCT.md).
 
 ## Authors
 

@@ -1,15 +1,14 @@
 <!-- omit in toc -->
 # Contributing to bitssh
 
-First off, thanks for taking the time to contribute! ❤️
+First off, thanks for taking the time to contribute!
 
-All types of contributions are encouraged and valued. See the [Table of Contents](#table-of-contents) for different ways to help and details about how this project handles them. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. The community looks forward to your contributions. 🎉
+All types of contributions are encouraged and valued. See the [Table of Contents](#table-of-contents) for different ways to help and details about how this project handles them.
 
-> And if you like the project, but just don't have time to contribute, that's fine. There are other easy ways to support the project and show your appreciation, which we would also be very happy about:
-> - Star the project
-> - Tweet about it
-> - Refer this project in your project's readme
-> - Mention the project at local meetups and tell your friends/colleagues
+> If you like the project but don't have time to contribute, you can still support it by:
+> - Starring the project
+> - Sharing it with others
+> - Referring to it in your own projects
 
 <!-- omit in toc -->
 ## Table of Contents
@@ -20,136 +19,206 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 - [Reporting Bugs](#reporting-bugs)
 - [Suggesting Enhancements](#suggesting-enhancements)
 - [Your First Code Contribution](#your-first-code-contribution)
-- [Improving The Documentation](#improving-the-documentation)
+- [Development Setup](#development-setup)
+- [Using Make](#using-make)
 - [Styleguides](#styleguides)
 - [Commit Messages](#commit-messages)
-- [Join The Project Team](#join-the-project-team)
-
 
 ## Code of Conduct
 
 This project and everyone participating in it is governed by the
-[bitssh Code of Conduct](https://github.com/Mr-Sunglasses/bitssh/master/CODE_OF_CONDUCT.md).
-By participating, you are expected to uphold this code. Please report unacceptable behavior
-to .
-
+[bitssh Code of Conduct](https://github.com/Mr-Sunglasses/bitssh/blob/main/CODE_OF_CONDUCT.md).
+By participating, you are expected to uphold this code.
 
 ## I Have a Question
 
-> If you want to ask a question, we assume that you have read the available [Documentation]().
+Before asking a question, please:
 
-Before you ask a question, it is best to search for existing [Issues](https://github.com/Mr-Sunglasses/bitssh/issues) that might help you. In case you have found a suitable issue and still need clarification, you can write your question in this issue. It is also advisable to search the internet for answers first.
+1. Read the [documentation](https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md)
+2. Search existing [Issues](https://github.com/Mr-Sunglasses/bitssh/issues)
+3. Search the internet for answers
 
-If you then still feel the need to ask a question and need clarification, we recommend the following:
-
-- Open an [Issue](https://github.com/Mr-Sunglasses/bitssh/issues/new).
-- Provide as much context as you can about what you're running into.
-- Provide project and platform versions (nodejs, npm, etc), depending on what seems relevant.
-
-We will then take care of the issue as soon as possible.
-
-<!--
-You might want to create a separate issue tag for questions and include it in this description. People should then tag their issues accordingly.
-
-Depending on how large the project is, you may want to outsource the questioning, e.g. to Stack Overflow or Gitter. You may add additional contact and information possibilities:
-- IRC
-- Slack
-- Gitter
-- Stack Overflow tag
-- Blog
-- FAQ
-- Roadmap
-- E-Mail List
-- Forum
--->
+If you still need help, [open an issue](https://github.com/Mr-Sunglasses/bitssh/issues/new) and provide as much context as possible, including your Python version, OS, and bitssh version.
 
 ## I Want To Contribute
 
-> ### Legal Notice <!-- omit in toc -->
-> When contributing to this project, you must agree that you have authored 100% of the content, that you have the necessary rights to the content and that the content you contribute may be provided under the project license.
+> **Legal Notice:** When contributing to this project, you must agree that you have authored 100% of the content, that you have the necessary rights to the content, and that the content you contribute may be provided under the project license.
 
 ### Reporting Bugs
 
-<!-- omit in toc -->
 #### Before Submitting a Bug Report
 
-A good bug report shouldn't leave others needing to chase you up for more information. Therefore, we ask you to investigate carefully, collect information and describe the issue in detail in your report. Please complete the following steps in advance to help us fix any potential bug as fast as possible.
-
-- Make sure that you are using the latest version.
-- Determine if your bug is really a bug and not an error on your side e.g. using incompatible environment components/versions (Make sure that you have read the [documentation](). If you are looking for support, you might want to check [this section](#i-have-a-question)).
-- To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the [bug tracker](https://github.com/Mr-Sunglasses/pastebin-telegramissues?q=label%3Abug).
-- Also make sure to search the internet (including Stack Overflow) to see if users outside of the GitHub community have discussed the issue.
+- Make sure you are using the latest version of bitssh
+- Check if the issue is really a bug and not a misconfiguration (read the [documentation](https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md))
+- Check if the bug has already been reported in the [issue tracker](https://github.com/Mr-Sunglasses/bitssh/issues?q=label%3Abug)
+- Make sure your `~/.ssh/config` file exists and is properly formatted
 - Collect information about the bug:
-- Stack trace (Traceback)
-- OS, Platform and Version (Windows, Linux, macOS, x86, ARM)
-- Version of the interpreter, compiler, SDK, runtime environment, package manager, depending on what seems relevant.
-- Possibly your input and the output
-- Can you reliably reproduce the issue? And can you also reproduce it with older versions?
+  - The full stack trace / traceback
+  - Your OS and terminal emulator
+  - Python version (`python --version`)
+  - bitssh version (`bitssh --version`)
+  - A sanitized copy of your SSH config (remove sensitive info like hostnames, IPs, and keys)
 
-<!-- omit in toc -->
-#### How Do I Submit a Good Bug Report?
+#### How to Submit a Good Bug Report
 
-> You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue tracker, or elsewhere in public. Instead sensitive bugs must be sent by email to .
-<!-- You may add a PGP key to allow the messages to be sent encrypted as well. -->
-
-We use GitHub issues to track bugs and errors. If you run into an issue with the project:
-
-- Open an [Issue](https://github.com/Mr-Sunglasses/bitssh/issues/new). (Since we can't be sure at this point whether it is a bug or not, we ask you not to talk about a bug yet and not to label the issue.)
-- Explain the behavior you would expect and the actual behavior.
-- Please provide as much context as possible and describe the *reproduction steps* that someone else can follow to recreate the issue on their own. This usually includes your code. For good bug reports you should isolate the problem and create a reduced test case.
-- Provide the information you collected in the previous section.
-
-Once it's filed:
-
-- The project team will label the issue accordingly.
-- A team member will try to reproduce the issue with your provided steps. If there are no reproduction steps or no obvious way to reproduce the issue, the team will ask you for those steps and mark the issue as `needs-repro`. Bugs with the `needs-repro` tag will not be addressed until they are reproduced.
-- If the team is able to reproduce the issue, it will be marked `needs-fix`, as well as possibly other tags (such as `critical`), and the issue will be left to be [implemented by someone](#your-first-code-contribution).
-
-<!-- You might want to create an issue template for bugs and errors that can be used as a guide and that defines the structure of the information to be included. If you do so, reference it here in the description. -->
-
+Use the [Bug Report template](https://github.com/Mr-Sunglasses/bitssh/issues/new?template=bug.yml) and fill in all the required fields. Include reproduction steps and expected vs actual behavior.
 
 ### Suggesting Enhancements
 
-This section guides you through submitting an enhancement suggestion for Pastebin-telegram, **including completely new features and minor improvements to existing functionality**. Following these guidelines will help maintainers and the community to understand your suggestion and find related suggestions.
+Use the [Feature Request template](https://github.com/Mr-Sunglasses/bitssh/issues/new?template=feature.yml) to suggest new features or improvements.
 
-<!-- omit in toc -->
-#### Before Submitting an Enhancement
+Before submitting, make sure to:
 
-- Make sure that you are using the latest version.
-- Read the [documentation](https://github.com/Mr-Sunglasses/bitssh/docs/docs.md) carefully and find out if the functionality is already covered, maybe by an individual configuration.
-- Perform a [search](https://github.com/Mr-Sunglasses/bitssh/issues) to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
-- Find out whether your idea fits with the scope and aims of the project. It's up to you to make a strong case to convince the project's developers of the merits of this feature. Keep in mind that we want features that will be useful to the majority of our users and not just a small subset. If you're just targeting a minority of users, consider writing an add-on/plugin library.
-
-<!-- omit in toc -->
-#### How Do I Submit a Good Enhancement Suggestion?
-
-Enhancement suggestions are tracked as [GitHub issues](https://github.com/Mr-Sunglasses/bitssh/issues).
-
-- Use a **clear and descriptive title** for the issue to identify the suggestion.
-- Provide a **step-by-step description of the suggested enhancement** in as many details as possible.
-- **Describe the current behavior** and **explain which behavior you expected to see instead** and why. At this point you can also tell which alternatives do not work for you.
-- You may want to **include screenshots and animated GIFs** which help you demonstrate the steps or point out the part which the suggestion is related to. You can use [this tool](https://www.cockos.com/licecap/) to record GIFs on macOS and Windows, and [this tool](https://github.com/colinkeenan/silentcast) or [this tool](https://github.com/GNOME/byzanz) on Linux. <!-- this should only be included if the project has a GUI -->
-- **Explain why this enhancement would be useful** to most Pastebin-telegram users. You may also want to point out the other projects that solved it better and which could serve as inspiration.
-
-<!-- You might want to create an issue template for enhancement suggestions that can be used as a guide and that defines the structure of the information to be included. If you do so, reference it here in the description. -->
+- Check if the feature already exists in the latest version
+- Search existing issues to avoid duplicates
+- Consider whether the feature benefits most bitssh users
 
 ### Your First Code Contribution
-<!-- TODO
-include Setup of env, IDE and typical getting started instructions?
 
--->
+#### 1. Fork and Clone
 
-### Improving The Documentation
-<!-- TODO
-Updating, improving and correcting the documentation
+```bash
+git clone https://github.com/YOUR_USERNAME/bitssh.git
+cd bitssh
+```
 
--->
+#### 2. Set Up the Development Environment
+
+```bash
+make dev
+```
+
+This creates a virtual environment, installs bitssh in editable mode with dev dependencies, and sets up pre-commit hooks.
+
+#### 3. Create a Branch
+
+```bash
+git checkout -b my-feature-branch
+```
+
+Use a descriptive branch name, e.g. `fix/ssh-config-parsing` or `feature/host-filtering`.
+
+#### 4. Make Your Changes
+
+Edit the source code in `src/bitssh/`. The main modules are:
+
+| File | Purpose |
+|---|---|
+| `src/bitssh/__main__.py` | Entry point and CLI argument handling |
+| `src/bitssh/cli.py` | CLI interface orchestration |
+| `src/bitssh/ui.py` | Terminal UI (TUI) rendering |
+| `src/bitssh/prompt.py` | User interaction / host selection |
+| `src/bitssh/utils.py` | SSH config parsing and utility functions |
+| `src/bitssh/argument_parser.py` | Argument parsing logic |
+
+#### 5. Run Tests
+
+```bash
+make test
+```
+
+#### 6. Lint and Format
+
+```bash
+make format   # auto-format code
+make lint     # check for lint errors
+make check    # run both lint and test (full CI check)
+```
+
+#### 7. Commit and Push
+
+```bash
+git add .
+git commit -m "feat: add host filtering in TUI"
+git push origin my-feature-branch
+```
+
+#### 8. Open a Pull Request
+
+Open a pull request against the `master` branch. Fill in the PR template completely.
+
+## Development Setup
+
+### Prerequisites
+
+- Python >= 3.10
+- [uv](https://docs.astral.sh/uv/) (recommended) or pip
+- make
+
+### Install Dependencies
+
+```bash
+make dev
+```
+
+Or manually:
+
+```bash
+uv venv
+uv pip install -e ".[dev]"
+uv run pre-commit install
+```
+
+### Running bitssh Locally
+
+```bash
+make run
+# or
+uv run bitssh
+# or
+python -m bitssh
+```
+
+Make sure you have a valid `~/.ssh/config` file. See the [README](https://github.com/Mr-Sunglasses/bitssh#troubleshooting) for troubleshooting.
+
+## Using Make
+
+The project includes a `Makefile` with convenient commands for common development tasks. Run `make help` to see all available commands.
+
+| Command | Description |
+|---|---|
+| `make dev` | Full setup: create venv, install deps, set up pre-commit hooks |
+| `make setup` | Create venv and install dev dependencies |
+| `make install` | Install the package in editable mode |
+| `make test` | Run the test suite with coverage |
+| `make lint` | Run linters (ruff) |
+| `make format` | Auto-format code (ruff format + ruff check --fix) |
+| `make check` | Run lint + test (full CI check) |
+| `make run` | Run bitssh CLI |
+| `make build` | Build distribution packages |
+| `make clean` | Remove build artifacts, caches, and venv |
 
 ## Styleguides
+
+### Python Style
+
+- Follow [PEP 8](https://peps.python.org/pep-0008/) conventions
+- Use `ruff` for linting and formatting (configured in `pyproject.toml`)
+- Line length: 100 characters
+- Target Python version: 3.10+
+
 ### Commit Messages
-<!-- TODO
 
--->
+Use [Conventional Commits](https://www.conventionalcommits.org/) format:
 
-## Join The Project Team
-<!-- TODO -->
+```
+type(scope): description
+```
+
+Common types:
+
+| Type | Use for |
+|---|---|
+| `feat` | New features |
+| `fix` | Bug fixes |
+| `docs` | Documentation changes |
+| `refactor` | Code restructuring |
+| `test` | Adding or updating tests |
+| `chore` | Build, CI, or tooling changes |
+
+Examples:
+
+- `feat(ui): add search filter for host list`
+- `fix(utils): handle missing SSH config gracefully`
+- `docs: update installation instructions`
+- `test(cli): add tests for argument parsing`
