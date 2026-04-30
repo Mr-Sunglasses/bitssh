@@ -1,13 +1,21 @@
 name: Greetings
 
-on: [pull_request_target, issues]
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
 
 jobs:
   greeting:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/first-interaction@v1
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: 'Thank you 🙏🏻 for submitting your first issue to bitssh by @Mr-Sunglasses'
-        pr-message: 'Thank you 🙏🏻 for contributing to bitssh by @Mr-Sunglasses. Looking Forward for more contributions.'
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: >-
+            Thank you 🙏🏻 for submitting your first issue to bitssh!
+            We'll look into it as soon as possible.
+          pr-message: >-
+            Thank you 🙏🏻 for your first contribution to bitssh!
+            We appreciate your effort and will review it shortly.
