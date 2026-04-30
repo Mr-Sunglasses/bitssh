@@ -1,4 +1,4 @@
-.PHONY: setup install dev test lint format clean build run check help
+.PHONY: setup install dev test lint format clean build run check bumpver help
 
 UV ?= uv
 
@@ -37,3 +37,12 @@ run: ## Run the CLI directly
 	$(UV) run bitssh
 
 check: lint test ## Run lint + test (full CI check)
+
+bumpver-major: ## Bump major version (e.g. 3.7.0 -> 4.0.0)
+	$(UV) run bumpver update --major
+
+bumpver-minor: ## Bump minor version (e.g. 3.7.0 -> 3.8.0)
+	$(UV) run bumpver update --minor
+
+bumpver-patch: ## Bump patch version (e.g. 3.7.0 -> 3.7.1)
+	$(UV) run bumpver update --patch

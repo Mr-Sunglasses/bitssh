@@ -85,4 +85,4 @@ def run():
     except KeyboardInterrupt:
         pass
     except Exception as e:
-        print(f"Error Happed {e}")
+        print(f"Error Happened: {e}")
