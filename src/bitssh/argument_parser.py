@@ -58,8 +58,12 @@ class Config:
         remove_parser.add_argument(
             "--host",
             type=str,
+            nargs="+",
             default=None,
-            help="The alias/name of the SSH host to remove (e.g. myserver).",
+            help=(
+                "One or more hosts to remove "
+                "(e.g. --host myserver or --host srv1 srv2)."
+            ),
         )
 
         args: Namespace = parser.parse_args()
@@ -82,3 +86,10 @@ class Config:
     def is_add_non_interactive(self) -> bool:
         """Return True if `bitssh add` was called with at least --host and --hostname."""
         return self.command == "add" and self.host is not None and self.hostname is not None
+
+    @property
+    def hosts(self) -> list:
+        """Return the list of hosts for the remove command."""
+        if self.host is None:
+            return []
+        return self.host

@@ -71,7 +71,21 @@ class TestConfigRemoveCommand:
         monkeypatch.setattr(sys, "argv", ["bitssh", "remove", "--host", "myserver"])
         config = Config()
         assert config.command == "remove"
-        assert config.host == "myserver"
+        assert config.host == ["myserver"]
+        assert config.hosts == ["myserver"]
+
+    def test_remove_with_multiple_host_flags(self, monkeypatch):
+        monkeypatch.setattr(
+            sys, "argv", ["bitssh", "remove", "--host", "srv1", "srv2", "srv3"]
+        )
+        config = Config()
+        assert config.command == "remove"
+        assert config.hosts == ["srv1", "srv2", "srv3"]
+
+    def test_remove_hosts_property_with_none(self, monkeypatch):
+        monkeypatch.setattr(sys, "argv", ["bitssh", "remove"])
+        config = Config()
+        assert config.hosts == []
 
     def test_remove_without_host_flag(self, monkeypatch):
         monkeypatch.setattr(sys, "argv", ["bitssh", "remove"])

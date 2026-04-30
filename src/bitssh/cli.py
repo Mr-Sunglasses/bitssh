@@ -51,20 +51,22 @@ def _handle_add(config: Config) -> None:
 
 def _handle_remove(config: Config) -> None:
     """Handle the `bitssh remove` subcommand."""
-    if config.host:
-        # Non-interactive mode: --host flag provided
-        try:
-            remove_host_from_config(config.host)
-            console.print(
-                f"[bold green]Success![/bold green] Host '[cyan]{config.host}[/cyan]' "
-                f"has been removed from the SSH config. 🗑️",
-            )
-        except ValueError as e:
-            console.print(f"[bold red]Error:[/bold red] {e}")
-        except Exception as e:
-            console.print(f"[bold red]Unexpected error:[/bold red] {e}")
+    if config.hosts:
+        # Non-interactive mode: --host flag(s) provided
+        for host in config.hosts:
+            try:
+                remove_host_from_config(host)
+                console.print(
+                    f"[bold green]Success![/bold green] Host "
+                    f"'[cyan]{host}[/cyan]' "
+                    f"has been removed from the SSH config. 🗑️",
+                )
+            except ValueError as e:
+                console.print(f"[bold red]Error:[/bold red] {e}")
+            except Exception as e:
+                console.print(f"[bold red]Unexpected error:[/bold red] {e}")
     else:
-        # Interactive mode: launch fuzzy select prompt
+        # Interactive mode: launch multiselect prompt
         remove_host_prompt()
 
 

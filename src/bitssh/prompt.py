@@ -147,39 +147,52 @@ def add_host_prompt() -> None:
 
 
 def remove_host_prompt() -> None:
-    """Interactive prompt to select and remove an SSH host from config."""
+    """Interactive prompt to select and remove SSH hosts from config."""
     try:
         hosts = get_config_file_host_data()
         if not hosts:
-            console.print("[bold yellow]No hosts found in SSH config.[/bold yellow]")
+            console.print(
+                "[bold yellow]No hosts found in SSH config.[/bold yellow]"
+            )
             return
 
-        selected = inquirer.fuzzy(
-            message="Select the host to remove:",
+        selected = inquirer.checkbox(
+            message="Select hosts to remove (use space to select, enter to confirm):",
             choices=hosts,
         ).execute()
 
-        if selected is None:
+        if not selected:
             return
 
-        try:
-            host_alias = selected.split("-> ")[1].strip()
-        except IndexError:
-            raise ValueError("Invalid format: expected '-> ' delimiter in the answer.")
+        # Parse host aliases from "🖥️  -> alias" format
+        host_aliases = []
+        for item in selected:
+            try:
+                host_aliases.append(item.split("-> ")[1].strip())
+            except IndexError:
+                raise ValueError(
+                    "Invalid format: expected '-> ' delimiter in the answer."
+                )
 
-        host_info = get_config_content().get(host_alias, {})
-
-        table = Table(title=f"Removing Host: {host_alias}")
-        table.add_column("Property", style="bold cyan", justify="left")
-        table.add_column("Value", style="magenta", justify="left")
-        table.add_row("Host", host_alias)
-        table.add_row("HostName", host_info.get("Hostname", "N/A"))
-        table.add_row("User", host_info.get("User", "N/A"))
-        table.add_row("Port", host_info.get("Port", "22"))
+        # Display table with all selected hosts
+        config_content = get_config_content()
+        table = Table(title="Removing Hosts")
+        table.add_column("Host", style="bold cyan", justify="left")
+        table.add_column("HostName", style="magenta", justify="left")
+        table.add_column("User", style="magenta", justify="left")
+        table.add_column("Port", style="magenta", justify="left")
+        for alias in host_aliases:
+            info = config_content.get(alias, {})
+            table.add_row(
+                alias,
+                info.get("Hostname", "N/A"),
+                info.get("User", "N/A"),
+                info.get("Port", "22"),
+            )
         console.print(table)
 
         confirm = inquirer.confirm(
-            message=f"Remove host '{host_alias}' from SSH config?",
+            message=f"Remove {len(host_aliases)} host(s) from SSH config?",
             default=False,
         ).execute()
 
@@ -187,14 +200,18 @@ def remove_host_prompt() -> None:
             console.print("[yellow]Cancelled.[/yellow] No changes were made.")
             return
 
-        remove_host_from_config(host_alias)
-        console.print(
-            f"[bold green]Success![/bold green] Host '[cyan]{host_alias}[/cyan]' "
-            f"has been removed from the SSH config. 🗑️",
-        )
+        for alias in host_aliases:
+            remove_host_from_config(alias)
+            console.print(
+                f"[bold green]Success![/bold green] Host "
+                f"'[cyan]{alias}[/cyan]' "
+                f"has been removed from the SSH config. 🗑️",
+            )
     except KeyboardInterrupt:
         console.print("\n[yellow]Cancelled.[/yellow]")
     except ValueError as e:
         console.print(f"\n[bold red]Error:[/bold red] {e}")
     except Exception as e:
-        console.print(f"\n[bold red]Unexpected error:[/bold red] {e}")
+        console.print(
+            f"\n[bold red]Unexpected error:[/bold red] {e}"
+        )

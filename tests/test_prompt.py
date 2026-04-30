@@ -175,58 +175,107 @@ class TestRemoveHostPrompt:
             patch("src.bitssh.prompt.get_config_file_host_data", return_value=["🖥️  -> myserver"]),
             patch("src.bitssh.prompt.inquirer") as mock_inquirer,
         ):
-            mock_inquirer.fuzzy.return_value.execute.return_value = None
+            mock_inquirer.checkbox.return_value.execute.return_value = []
             with patch("src.bitssh.prompt.console"):
                 remove_host_prompt()
 
-            mock_inquirer.fuzzy.assert_called_once()
+            mock_inquirer.checkbox.assert_called_once()
 
     def test_cancel_confirm_does_not_remove(self):
         with (
-            patch("src.bitssh.prompt.get_config_file_host_data", return_value=["🖥️  -> myserver"]),
+            patch(
+                "src.bitssh.prompt.get_config_file_host_data",
+                return_value=["🖥️  -> myserver"],
+            ),
             patch("src.bitssh.prompt.inquirer") as mock_inquirer,
             patch(
                 "src.bitssh.prompt.get_config_content",
-                return_value={"myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}},
+                return_value={
+                    "myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}
+                },
             ),
             patch("src.bitssh.prompt.remove_host_from_config") as mock_remove,
             patch("src.bitssh.prompt.console"),
         ):
-            mock_inquirer.fuzzy.return_value.execute.return_value = "🖥️  -> myserver"
+            mock_inquirer.checkbox.return_value.execute.return_value = [
+                "🖥️  -> myserver"
+            ]
             mock_inquirer.confirm.return_value.execute.return_value = False
 
             remove_host_prompt()
             mock_remove.assert_not_called()
 
-    def test_confirm_removes_host(self):
+    def test_confirm_removes_single_host(self):
         with (
-            patch("src.bitssh.prompt.get_config_file_host_data", return_value=["🖥️  -> myserver"]),
+            patch(
+                "src.bitssh.prompt.get_config_file_host_data",
+                return_value=["🖥️  -> myserver"],
+            ),
             patch("src.bitssh.prompt.inquirer") as mock_inquirer,
             patch(
                 "src.bitssh.prompt.get_config_content",
-                return_value={"myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}},
+                return_value={
+                    "myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}
+                },
             ),
             patch("src.bitssh.prompt.remove_host_from_config") as mock_remove,
             patch("src.bitssh.prompt.console"),
         ):
-            mock_inquirer.fuzzy.return_value.execute.return_value = "🖥️  -> myserver"
+            mock_inquirer.checkbox.return_value.execute.return_value = [
+                "🖥️  -> myserver"
+            ]
             mock_inquirer.confirm.return_value.execute.return_value = True
 
             remove_host_prompt()
             mock_remove.assert_called_once_with("myserver")
 
-    def test_displays_host_info_table_before_removal(self):
+    def test_confirm_removes_multiple_hosts(self):
         with (
-            patch("src.bitssh.prompt.get_config_file_host_data", return_value=["🖥️  -> myserver"]),
+            patch(
+                "src.bitssh.prompt.get_config_file_host_data",
+                return_value=["🖥️  -> srv1", "🖥️  -> srv2"],
+            ),
             patch("src.bitssh.prompt.inquirer") as mock_inquirer,
             patch(
                 "src.bitssh.prompt.get_config_content",
-                return_value={"myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}},
+                return_value={
+                    "srv1": {"Hostname": "1.1.1.1", "User": "root", "Port": "22"},
+                    "srv2": {"Hostname": "2.2.2.2", "User": "admin", "Port": "2222"},
+                },
+            ),
+            patch("src.bitssh.prompt.remove_host_from_config") as mock_remove,
+            patch("src.bitssh.prompt.console"),
+        ):
+            mock_inquirer.checkbox.return_value.execute.return_value = [
+                "🖥️  -> srv1",
+                "🖥️  -> srv2",
+            ]
+            mock_inquirer.confirm.return_value.execute.return_value = True
+
+            remove_host_prompt()
+            assert mock_remove.call_count == 2
+            mock_remove.assert_any_call("srv1")
+            mock_remove.assert_any_call("srv2")
+
+    def test_displays_hosts_table_before_removal(self):
+        with (
+            patch(
+                "src.bitssh.prompt.get_config_file_host_data",
+                return_value=["🖥️  -> myserver"],
+            ),
+            patch("src.bitssh.prompt.inquirer") as mock_inquirer,
+            patch(
+                "src.bitssh.prompt.get_config_content",
+                return_value={
+                    "myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}
+                },
             ),
             patch("src.bitssh.prompt.remove_host_from_config"),
             patch("src.bitssh.prompt.console") as mock_console,
         ):
-            mock_inquirer.fuzzy.return_value.execute.return_value = "🖥️  -> myserver"
+            mock_inquirer.checkbox.return_value.execute.return_value = [
+                "🖥️  -> myserver"
+            ]
             mock_inquirer.confirm.return_value.execute.return_value = True
 
             remove_host_prompt()
@@ -239,7 +288,10 @@ class TestRemoveHostPrompt:
 
     def test_keyboard_interrupt_cancels(self):
         with (
-            patch("src.bitssh.prompt.get_config_file_host_data", side_effect=KeyboardInterrupt),
+            patch(
+                "src.bitssh.prompt.get_config_file_host_data",
+                side_effect=KeyboardInterrupt,
+            ),
             patch("src.bitssh.prompt.console") as mock_console,
         ):
             remove_host_prompt()
@@ -250,11 +302,16 @@ class TestRemoveHostPrompt:
 
     def test_invalid_format_shows_error(self):
         with (
-            patch("src.bitssh.prompt.get_config_file_host_data", return_value=["🖥️  -> myserver"]),
+            patch(
+                "src.bitssh.prompt.get_config_file_host_data",
+                return_value=["🖥️  -> myserver"],
+            ),
             patch("src.bitssh.prompt.inquirer") as mock_inquirer,
             patch("src.bitssh.prompt.console") as mock_console,
         ):
-            mock_inquirer.fuzzy.return_value.execute.return_value = "no-delimiter-here"
+            mock_inquirer.checkbox.return_value.execute.return_value = [
+                "no-delimiter-here"
+            ]
 
             remove_host_prompt()
             error_calls = [c for c in mock_console.print.call_args_list if "Error" in str(c)]
@@ -262,16 +319,26 @@ class TestRemoveHostPrompt:
 
     def test_value_error_during_removal(self):
         with (
-            patch("src.bitssh.prompt.get_config_file_host_data", return_value=["🖥️  -> myserver"]),
+            patch(
+                "src.bitssh.prompt.get_config_file_host_data",
+                return_value=["🖥️  -> myserver"],
+            ),
             patch("src.bitssh.prompt.inquirer") as mock_inquirer,
             patch(
                 "src.bitssh.prompt.get_config_content",
-                return_value={"myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}},
+                return_value={
+                    "myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}
+                },
             ),
-            patch("src.bitssh.prompt.remove_host_from_config", side_effect=ValueError("not found")),
+            patch(
+                "src.bitssh.prompt.remove_host_from_config",
+                side_effect=ValueError("not found"),
+            ),
             patch("src.bitssh.prompt.console") as mock_console,
         ):
-            mock_inquirer.fuzzy.return_value.execute.return_value = "🖥️  -> myserver"
+            mock_inquirer.checkbox.return_value.execute.return_value = [
+                "🖥️  -> myserver"
+            ]
             mock_inquirer.confirm.return_value.execute.return_value = True
 
             remove_host_prompt()
@@ -280,18 +347,26 @@ class TestRemoveHostPrompt:
 
     def test_unexpected_error_during_removal(self):
         with (
-            patch("src.bitssh.prompt.get_config_file_host_data", return_value=["🖥️  -> myserver"]),
+            patch(
+                "src.bitssh.prompt.get_config_file_host_data",
+                return_value=["🖥️  -> myserver"],
+            ),
             patch("src.bitssh.prompt.inquirer") as mock_inquirer,
             patch(
                 "src.bitssh.prompt.get_config_content",
-                return_value={"myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}},
+                return_value={
+                    "myserver": {"Hostname": "1.2.3.4", "User": "root", "Port": "22"}
+                },
             ),
             patch(
-                "src.bitssh.prompt.remove_host_from_config", side_effect=RuntimeError("disk error")
+                "src.bitssh.prompt.remove_host_from_config",
+                side_effect=RuntimeError("disk error"),
             ),
             patch("src.bitssh.prompt.console") as mock_console,
         ):
-            mock_inquirer.fuzzy.return_value.execute.return_value = "🖥️  -> myserver"
+            mock_inquirer.checkbox.return_value.execute.return_value = [
+                "🖥️  -> myserver"
+            ]
             mock_inquirer.confirm.return_value.execute.return_value = True
 
             remove_host_prompt()

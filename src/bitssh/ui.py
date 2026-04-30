@@ -16,4 +16,4 @@ def draw_table():
     for i in get_config_file_row_data():
         table.add_row(i[0], i[1], i[2], i[3])
 
-    console.print(table)
+    console.print(table, justify="center")

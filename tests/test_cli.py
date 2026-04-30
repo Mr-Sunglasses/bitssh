@@ -86,11 +86,24 @@ class TestHandleRemove:
                 _handle_remove(config)
                 mock_remove.assert_called_once_with("myserver")
 
+    def test_non_interactive_removes_multiple_hosts(self, monkeypatch):
+        monkeypatch.setattr(
+            "sys.argv", ["bitssh", "remove", "--host", "srv1", "srv2"]
+        )
+        config = Config()
+        with patch("src.bitssh.cli.remove_host_from_config") as mock_remove:
+            with patch("src.bitssh.cli.console"):
+                _handle_remove(config)
+                assert mock_remove.call_count == 2
+                mock_remove.assert_any_call("srv1")
+                mock_remove.assert_any_call("srv2")
+
     def test_non_interactive_host_not_found_shows_error(self, monkeypatch):
         monkeypatch.setattr("sys.argv", ["bitssh", "remove", "--host", "nonexistent"])
         config = Config()
         with patch(
-            "src.bitssh.cli.remove_host_from_config", side_effect=ValueError("does not exist")
+            "src.bitssh.cli.remove_host_from_config",
+            side_effect=ValueError("does not exist"),
         ):
             with patch("src.bitssh.cli.console") as mock_console:
                 _handle_remove(config)
