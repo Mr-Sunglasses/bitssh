@@ -44,7 +44,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/Mr-Sunglasses/bitssh"
-Documentation = "https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md"
+Documentation = "https://github.com/Mr-Sunglasses/bitssh/blob/master/README.md"
 Repository = "https://github.com/Mr-Sunglasses/bitssh"
 Issues = "https://github.com/Mr-Sunglasses/bitssh/issues"
 Changelog = "https://github.com/Mr-Sunglasses/bitssh/releases"

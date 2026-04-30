@@ -34,7 +34,7 @@ By participating, you are expected to uphold this code.
 
 Before asking a question, please:
 
-1. Read the [documentation](https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md)
+1. Read the [documentation](https://github.com/Mr-Sunglasses/bitssh/blob/master/README.md)
 2. Search existing [Issues](https://github.com/Mr-Sunglasses/bitssh/issues)
 3. Search the internet for answers
 
@@ -49,7 +49,7 @@ If you still need help, [open an issue](https://github.com/Mr-Sunglasses/bitssh/
 #### Before Submitting a Bug Report
 
 - Make sure you are using the latest version of bitssh
-- Check if the issue is really a bug and not a misconfiguration (read the [documentation](https://github.com/Mr-Sunglasses/bitssh/blob/master/docs/docs.md))
+- Check if the issue is really a bug and not a misconfiguration (read the [documentation](https://github.com/Mr-Sunglasses/bitssh/blob/master/README.md))
 - Check if the bug has already been reported in the [issue tracker](https://github.com/Mr-Sunglasses/bitssh/issues?q=label%3Abug)
 - Make sure your `~/.ssh/config` file exists and is properly formatted
 - Collect information about the bug:
