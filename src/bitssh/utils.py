@@ -1,6 +1,6 @@
 import os
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional
 
 CONFIG_FILE_PATH: str = os.path.expanduser("~/.ssh/config")
 
@@ -39,7 +39,8 @@ def get_config_content():
     filtered_content = "\n".join(filtered_lines)
 
     # Case-insensitive patterns - make sure all are properly case-insensitive
-    # Fixed: Use \S+ instead of \w+ to match non-whitespace characters (includes hyphens, dots, etc.)
+    # Fixed: Use \S+ instead of \w+ to match non-whitespace
+    # characters (includes hyphens, dots, etc.)
     host_pattern = re.compile(r"^Host\s+(\S+)", re.MULTILINE | re.IGNORECASE)
     hostname_pattern = re.compile(
         r"^\s*(?:HostName|Hostname)\s+(\S+)", re.MULTILINE | re.IGNORECASE
@@ -152,3 +153,60 @@ def write_host_to_config(
 
     with open(CONFIG_FILE_PATH, "a", encoding="utf-8") as f:
         f.write(block)
+
+
+def remove_host_from_config(host: str) -> None:
+    """Remove a host entry from the SSH config file.
+
+    Finds the Host block by alias and removes it entirely, including all
+    indented lines that belong to it.
+
+    Args:
+        host: The alias/name of the SSH host to remove.
+
+    Raises:
+        ValueError: If the host alias does not exist in the config.
+        FileNotFoundError: If the SSH config file does not exist.
+    """
+    _validate_config_file()
+
+    if not host_exists(host):
+        raise ValueError(f"Host '{host}' does not exist in {CONFIG_FILE_PATH}.")
+
+    with open(CONFIG_FILE_PATH, "r", encoding="utf-8") as f:
+        raw_lines = f.readlines()
+
+    host_pattern = re.compile(r"^Host\s+(\S+)", re.IGNORECASE)
+    new_lines: List[str] = []
+    skip = False
+
+    for line in raw_lines:
+        match = host_pattern.match(line.strip())
+        if match:
+            if match.group(1) == host:
+                skip = True
+                continue
+            else:
+                skip = False
+
+        if skip:
+            stripped = line.strip()
+            # Still part of the host block (indented or empty line within the block)
+            if stripped == "" or (not host_pattern.match(stripped)):
+                continue
+            else:
+                skip = False  # pragma: no cover
+
+        new_lines.append(line)
+
+    # Clean up leading/trailing blank lines
+    content = "".join(new_lines).strip() + "\n"
+
+    with open(CONFIG_FILE_PATH, "w", encoding="utf-8") as f:
+        f.write(content)
+
+
+def get_host_aliases() -> List[str]:
+    """Return a plain list of all host aliases from the SSH config."""
+    config = get_config_content()
+    return list(config.keys())

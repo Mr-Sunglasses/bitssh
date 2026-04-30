@@ -1,12 +1,17 @@
 import pytest
-import os
 
+import src.bitssh.utils
 from src.bitssh.utils import (
+    _ensure_config_file,
+    _validate_config_file,
     get_config_content,
     get_config_file_host_data,
     get_config_file_row_data,
+    get_host_aliases,
+    host_exists,
+    remove_host_from_config,
+    write_host_to_config,
 )
-import src.bitssh.utils
 
 
 @pytest.mark.parametrize(
@@ -71,17 +76,17 @@ import src.bitssh.utils
                     "Port": "22",
                 },
                 "user_only": {
-                    "Hostname": "user_only",  # Should default to host name
+                    "Hostname": "user_only",
                     "User": "user_only_user",
                     "Port": "22",
                 },
                 "minimal_host": {
-                    "Hostname": "minimal_host",  # Should default to host name
+                    "Hostname": "minimal_host",
                     "User": None,
                     "Port": "22",
                 },
                 "empty_host": {
-                    "Hostname": "empty_host",  # Should default to host name
+                    "Hostname": "empty_host",
                     "User": None,
                     "Port": "22",
                 },
@@ -161,7 +166,7 @@ import src.bitssh.utils
         (
             "config_duplicate.txt",
             {
-                "duplicate": {  # Current Implementation of Code always Picks the Last Entry
+                "duplicate": {
                     "Hostname": "second.example.com",
                     "User": "second_user",
                     "Port": "2222",
@@ -304,3 +309,227 @@ def test_get_config_file_host_data(
     actual_hosts: list[str] = get_config_file_host_data()
 
     assert actual_hosts == expected_hosts
+
+
+class TestValidateConfigFile:
+    def test_raises_when_file_not_found(self, tmp_path, monkeypatch):
+        nonexistent = tmp_path / "no_such_file"
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", nonexistent)
+        with pytest.raises(FileNotFoundError):
+            _validate_config_file()
+
+    def test_passes_when_file_exists(self, mock_data_root_dir, monkeypatch):
+        monkeypatch.setattr(
+            src.bitssh.utils, "CONFIG_FILE_PATH", mock_data_root_dir / "config_data.txt"
+        )
+        _validate_config_file()
+
+
+class TestEnsureConfigFile:
+    def test_creates_directory_and_file(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "ssh" / "config"
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+        _ensure_config_file()
+        assert config_path.exists()
+
+    def test_does_not_overwrite_existing_file(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text("Host existing\n    HostName 1.2.3.4\n", encoding="utf-8")
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+        _ensure_config_file()
+        assert config_path.read_text(encoding="utf-8") == "Host existing\n    HostName 1.2.3.4\n"
+
+    def test_creates_file_in_existing_dir(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+        _ensure_config_file()
+        assert config_path.exists()
+
+
+class TestHostExists:
+    def test_returns_true_when_host_exists(self, mock_data_root_dir, monkeypatch):
+        monkeypatch.setattr(
+            src.bitssh.utils, "CONFIG_FILE_PATH", mock_data_root_dir / "config_data.txt"
+        )
+        assert host_exists("testHost1") is True
+
+    def test_returns_false_when_host_not_found(self, mock_data_root_dir, monkeypatch):
+        monkeypatch.setattr(
+            src.bitssh.utils, "CONFIG_FILE_PATH", mock_data_root_dir / "config_data.txt"
+        )
+        assert host_exists("nonexistent") is False
+
+    def test_returns_false_when_config_file_missing(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", tmp_path / "no_such_file")
+        assert host_exists("anything") is False
+
+
+class TestGetHostAliases:
+    def test_returns_host_aliases(self, mock_data_root_dir, monkeypatch):
+        monkeypatch.setattr(
+            src.bitssh.utils, "CONFIG_FILE_PATH", mock_data_root_dir / "config_data.txt"
+        )
+        aliases = get_host_aliases()
+        assert aliases == ["testHost1", "testHost2"]
+
+    def test_returns_empty_list_for_empty_config(self, mock_data_root_dir, monkeypatch):
+        monkeypatch.setattr(
+            src.bitssh.utils,
+            "CONFIG_FILE_PATH",
+            mock_data_root_dir / "config_empty_and_only_comments.txt",
+        )
+        aliases = get_host_aliases()
+        assert aliases == []
+
+
+class TestWriteHostToConfig:
+    def test_writes_new_host(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text("", encoding="utf-8")
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        write_host_to_config(host="myserver", hostname="192.168.1.1")
+
+        content = config_path.read_text(encoding="utf-8")
+        assert "Host myserver" in content
+        assert "HostName 192.168.1.1" in content
+
+    def test_writes_host_with_all_fields(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text("", encoding="utf-8")
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        write_host_to_config(
+            host="myserver",
+            hostname="192.168.1.1",
+            user="root",
+            port=2222,
+            identity_file="~/.ssh/id_rsa",
+        )
+
+        content = config_path.read_text(encoding="utf-8")
+        assert "Host myserver" in content
+        assert "HostName 192.168.1.1" in content
+        assert "User root" in content
+        assert "Port 2222" in content
+        assert "IdentityFile ~/.ssh/id_rsa" in content
+
+    def test_does_not_write_port_22(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text("", encoding="utf-8")
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        write_host_to_config(host="myserver", hostname="192.168.1.1", port=22)
+
+        content = config_path.read_text(encoding="utf-8")
+        assert "Port" not in content
+
+    def test_raises_error_when_host_already_exists(self, mock_data_root_dir, monkeypatch):
+        monkeypatch.setattr(
+            src.bitssh.utils, "CONFIG_FILE_PATH", mock_data_root_dir / "config_data.txt"
+        )
+        with pytest.raises(ValueError, match="already exists"):
+            write_host_to_config(host="testHost1", hostname="1.2.3.4")
+
+    def test_appends_to_existing_file(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text(
+            "Host existing\n    HostName 1.2.3.4\n    User root\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        write_host_to_config(host="newhost", hostname="10.0.0.1", user="admin", port=22)
+
+        content = config_path.read_text(encoding="utf-8")
+        assert "Host existing" in content
+        assert "Host newhost" in content
+        assert "HostName 10.0.0.1" in content
+        assert "User admin" in content
+
+    def test_writes_user_none_not_included(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text("", encoding="utf-8")
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        write_host_to_config(host="myserver", hostname="1.2.3.4", user=None)
+
+        content = config_path.read_text(encoding="utf-8")
+        assert "User" not in content
+
+
+class TestRemoveHostFromConfig:
+    def test_removes_existing_host(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text(
+            "Host myserver\n    HostName 192.168.1.1\n    User root\n\n"
+            "Host other\n    HostName 10.0.0.1\n    User admin\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        remove_host_from_config("myserver")
+
+        content = config_path.read_text(encoding="utf-8")
+        assert "Host myserver" not in content
+        assert "Host other" in content
+        assert "HostName 10.0.0.1" in content
+
+    def test_raises_error_when_host_not_found(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text("Host myserver\n    HostName 192.168.1.1\n", encoding="utf-8")
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        with pytest.raises(ValueError, match="does not exist"):
+            remove_host_from_config("nonexistent")
+
+    def test_raises_error_when_config_file_missing(self, tmp_path, monkeypatch):
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", tmp_path / "no_such_file")
+        with pytest.raises(FileNotFoundError):
+            remove_host_from_config("anything")
+
+    def test_removes_last_host_leans_clean_file(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text("Host myserver\n    HostName 192.168.1.1\n", encoding="utf-8")
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        remove_host_from_config("myserver")
+
+        content = config_path.read_text(encoding="utf-8")
+        assert content.strip() == ""
+
+    def test_removes_middle_host(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text(
+            "Host first\n    HostName 1.1.1.1\n\n"
+            "Host second\n    HostName 2.2.2.2\n\n"
+            "Host third\n    HostName 3.3.3.3\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        remove_host_from_config("second")
+
+        content = config_path.read_text(encoding="utf-8")
+        assert "Host first" in content
+        assert "Host third" in content
+        assert "Host second" not in content
+        assert "2.2.2.2" not in content
+
+    def test_skips_to_next_host_block_correctly(self, tmp_path, monkeypatch):
+        config_path = tmp_path / "config"
+        config_path.write_text(
+            "Host first\n    HostName 1.1.1.1\n\n"
+            "Host second\n    HostName 2.2.2.2\n\n"
+            "Host third\n    HostName 3.3.3.3\n",
+            encoding="utf-8",
+        )
+        monkeypatch.setattr(src.bitssh.utils, "CONFIG_FILE_PATH", config_path)
+
+        remove_host_from_config("second")
+
+        content = config_path.read_text(encoding="utf-8")
+        assert "Host first" in content
+        assert "HostName 1.1.1.1" in content
+        assert "Host third" in content
+        assert "HostName 3.3.3.3" in content
