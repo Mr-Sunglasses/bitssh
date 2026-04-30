@@ -4,7 +4,6 @@ requires-python = ">=3.10"
 
 [[package]]
 name = "bitssh"
-version = "3.7.0"
 source = { editable = "." }
 dependencies = [
     { name = "inquirerpy" },
