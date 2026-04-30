@@ -1,9 +1,9 @@
-from bitssh import __version__
+from bitssh import __version__  # noqa: F401
 
 from .argument_parser import Config
-from .prompt import add_host_prompt, ask_host_prompt
+from .prompt import add_host_prompt, ask_host_prompt, remove_host_prompt
 from .ui import console, draw_table
-from .utils import write_host_to_config
+from .utils import remove_host_from_config, write_host_to_config
 
 
 def _handle_add(config: Config) -> None:
@@ -37,8 +37,7 @@ def _handle_add(config: Config) -> None:
         )
         console.print("Usage examples:")
         console.print(
-            "  [green]bitssh add[/green]                                         "
-            "# Interactive mode"
+            "  [green]bitssh add[/green]                                         # Interactive mode"
         )
         console.print(
             "  [green]bitssh add --host myserver --hostname 192.168.1.1[/green]  "
@@ -50,6 +49,27 @@ def _handle_add(config: Config) -> None:
         )
 
 
+def _handle_remove(config: Config) -> None:
+    """Handle the `bitssh remove` subcommand."""
+    if config.hosts:
+        # Non-interactive mode: --host flag(s) provided
+        for host in config.hosts:
+            try:
+                remove_host_from_config(host)
+                console.print(
+                    f"[bold green]Success![/bold green] Host "
+                    f"'[cyan]{host}[/cyan]' "
+                    f"has been removed from the SSH config. 🗑️",
+                )
+            except ValueError as e:
+                console.print(f"[bold red]Error:[/bold red] {e}")
+            except Exception as e:
+                console.print(f"[bold red]Unexpected error:[/bold red] {e}")
+    else:
+        # Interactive mode: launch multiselect prompt
+        remove_host_prompt()
+
+
 def run():
     try:
         config = Config()
@@ -57,6 +77,8 @@ def run():
             print(f"bitssh {__version__}")
         elif config.command == "add":
             _handle_add(config)
+        elif config.command == "remove":
+            _handle_remove(config)
         else:
             draw_table()
             ask_host_prompt()

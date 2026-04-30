@@ -19,9 +19,7 @@ class Config:
         subparsers = parser.add_subparsers(dest="command")
 
         # `bitssh add` subcommand
-        add_parser = subparsers.add_parser(
-            "add", help="Add a new host to the SSH config file."
-        )
+        add_parser = subparsers.add_parser("add", help="Add a new host to the SSH config file.")
         add_parser.add_argument(
             "--host",
             type=str,
@@ -53,6 +51,21 @@ class Config:
             help="Path to the private key file (e.g. ~/.ssh/id_rsa).",
         )
 
+        # `bitssh remove` subcommand
+        remove_parser = subparsers.add_parser(
+            "remove", help="Remove a host from the SSH config file."
+        )
+        remove_parser.add_argument(
+            "--host",
+            type=str,
+            nargs="+",
+            default=None,
+            help=(
+                "One or more hosts to remove "
+                "(e.g. --host myserver or --host srv1 srv2)."
+            ),
+        )
+
         args: Namespace = parser.parse_args()
         self.version: bool = args.version
         self.command: Optional[str] = args.command
@@ -72,8 +85,11 @@ class Config:
 
     def is_add_non_interactive(self) -> bool:
         """Return True if `bitssh add` was called with at least --host and --hostname."""
-        return (
-            self.command == "add"
-            and self.host is not None
-            and self.hostname is not None
-        )
+        return self.command == "add" and self.host is not None and self.hostname is not None
+
+    @property
+    def hosts(self) -> list:
+        """Return the list of hosts for the remove command."""
+        if self.host is None:
+            return []
+        return self.host

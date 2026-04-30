@@ -1,12 +1,19 @@
 import os
 import subprocess
-from typing import Dict, List, Optional
+from typing import List
 
 from InquirerPy import inquirer
 from InquirerPy.validator import NumberValidator
+from rich.table import Table
 
 from .ui import console
-from .utils import get_config_file_host_data, host_exists, write_host_to_config
+from .utils import (
+    get_config_content,
+    get_config_file_host_data,
+    host_exists,
+    remove_host_from_config,
+    write_host_to_config,
+)
 
 
 def ask_host_prompt():
@@ -62,7 +69,8 @@ def add_host_prompt() -> None:
 
         if host_exists(host.strip()):
             console.print(
-                f"[bold red]Error:[/bold red] Host '{host.strip()}' already exists in the SSH config.",
+                "[bold red]Error:[/bold red] Host "
+                f"'{host.strip()}' already exists in the SSH config.",
             )
             return
 
@@ -104,7 +112,7 @@ def add_host_prompt() -> None:
         if port_int and port_int != 22:
             console.print(f"  Port:          [cyan]{port_int}[/cyan]")
         else:
-            console.print(f"  Port:          [cyan]22[/cyan]")
+            console.print("  Port:          [cyan]22[/cyan]")
         if identity_file:
             console.print(f"  IdentityFile:  [cyan]{identity_file}[/cyan]")
 
@@ -126,7 +134,8 @@ def add_host_prompt() -> None:
         )
 
         console.print(
-            f"\n[bold green]Success![/bold green] Host '[cyan]{host}[/cyan]' has been added to the SSH config. 🎉",
+            "[bold green]Success![/bold green] Host "
+            f"'[cyan]{host}[/cyan]' has been added to the SSH config. 🎉",
         )
 
     except KeyboardInterrupt:
@@ -135,3 +144,74 @@ def add_host_prompt() -> None:
         console.print(f"\n[bold red]Error:[/bold red] {e}")
     except Exception as e:
         console.print(f"\n[bold red]Unexpected error:[/bold red] {e}")
+
+
+def remove_host_prompt() -> None:
+    """Interactive prompt to select and remove SSH hosts from config."""
+    try:
+        hosts = get_config_file_host_data()
+        if not hosts:
+            console.print(
+                "[bold yellow]No hosts found in SSH config.[/bold yellow]"
+            )
+            return
+
+        selected = inquirer.checkbox(
+            message="Select hosts to remove (use space to select, enter to confirm):",
+            choices=hosts,
+        ).execute()
+
+        if not selected:
+            return
+
+        # Parse host aliases from "🖥️  -> alias" format
+        host_aliases = []
+        for item in selected:
+            try:
+                host_aliases.append(item.split("-> ")[1].strip())
+            except IndexError:
+                raise ValueError(
+                    "Invalid format: expected '-> ' delimiter in the answer."
+                )
+
+        # Display table with all selected hosts
+        config_content = get_config_content()
+        table = Table(title="Removing Hosts")
+        table.add_column("Host", style="bold cyan", justify="left")
+        table.add_column("HostName", style="magenta", justify="left")
+        table.add_column("User", style="magenta", justify="left")
+        table.add_column("Port", style="magenta", justify="left")
+        for alias in host_aliases:
+            info = config_content.get(alias, {})
+            table.add_row(
+                alias,
+                info.get("Hostname", "N/A"),
+                info.get("User", "N/A"),
+                info.get("Port", "22"),
+            )
+        console.print(table)
+
+        confirm = inquirer.confirm(
+            message=f"Remove {len(host_aliases)} host(s) from SSH config?",
+            default=False,
+        ).execute()
+
+        if not confirm:
+            console.print("[yellow]Cancelled.[/yellow] No changes were made.")
+            return
+
+        for alias in host_aliases:
+            remove_host_from_config(alias)
+            console.print(
+                f"[bold green]Success![/bold green] Host "
+                f"'[cyan]{alias}[/cyan]' "
+                f"has been removed from the SSH config. 🗑️",
+            )
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Cancelled.[/yellow]")
+    except ValueError as e:
+        console.print(f"\n[bold red]Error:[/bold red] {e}")
+    except Exception as e:
+        console.print(
+            f"\n[bold red]Unexpected error:[/bold red] {e}"
+        )
