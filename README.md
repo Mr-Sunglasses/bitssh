@@ -28,12 +28,17 @@ Install bitssh with docker
 
 ```
 
-Install bitssh with uv (recommended)
+Install bitssh with uvx (recommended)
+```
+  uvx bitssh
+```
+
+Install bitssh with uv tool (recommended)
 ```
   uv tool install bitssh
 ```
 
-Install bitssh with pip
+Install bitssh with pip (no recommended)
 
 ```bash
   pip3 install bitssh
@@ -157,10 +162,6 @@ Host wxy
 ```
 
 You can check the [OpenBSD `ssh_config` reference](https://man.openbsd.org/ssh_config.5) for more information on how to setup `~/.ssh/config`.
-
-## Documentation
-
-[Documentation](docs/docs.md)
 
 ## Contributing
 
