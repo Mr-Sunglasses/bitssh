@@ -1,5 +1,8 @@
+import getpass
+
 from bitssh import __version__  # noqa: F401
 
+from . import password_store
 from .argument_parser import Config
 from .prompt import add_host_prompt, ask_host_prompt, remove_host_prompt
 from .ui import console, draw_table
@@ -21,6 +24,10 @@ def _handle_add(config: Config) -> None:
                 port=config.port,
                 identity_file=config.identity_file,
             )
+            if config.ask_password:
+                password = getpass.getpass(f"Password for '{config.host}': ")
+                if password:
+                    password_store.save_password(config.host, password)
             console.print(
                 f"[bold green]Success![/bold green] Host '[cyan]{config.host}[/cyan]' "
                 f"has been added to the SSH config. 🎉",
@@ -56,6 +63,7 @@ def _handle_remove(config: Config) -> None:
         for host in config.hosts:
             try:
                 remove_host_from_config(host)
+                password_store.delete_password(host)
                 console.print(
                     f"[bold green]Success![/bold green] Host "
                     f"'[cyan]{host}[/cyan]' "
