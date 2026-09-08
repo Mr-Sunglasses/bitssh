@@ -1,11 +1,13 @@
 import os
+import shutil
 import subprocess
-from typing import List
+from typing import List, Optional
 
 from InquirerPy import inquirer
 from InquirerPy.validator import NumberValidator
 from rich.table import Table
 
+from . import crypto, password_store
 from .ui import console
 from .utils import (
     get_config_content,
@@ -14,6 +16,45 @@ from .utils import (
     remove_host_from_config,
     write_host_to_config,
 )
+
+
+def _connect(host: str) -> None:
+    """Run `ssh host`, auto-filling a saved password if one exists."""
+    if os.name == "nt":  # Windows
+        subprocess.run(["cls"], shell=True, check=True)
+    else:  # Unix-like systems
+        subprocess.run(["clear"], check=True)
+
+    password: Optional[str] = None
+    if password_store.has_password(host):
+        try:
+            password = password_store.get_password(host)
+        except crypto.DecryptionError as e:
+            console.print(f"[bold yellow]Warning:[/bold yellow] {e}")
+
+    if password is not None:
+        if shutil.which("sshpass") is None:
+            console.print(
+                "[bold yellow]Warning:[/bold yellow] A password is saved for "
+                f"'{host}' but the 'sshpass' tool is not installed, so it "
+                "can't be auto-filled. Install sshpass to enable automatic "
+                "login, or you'll be prompted for the password manually."
+            )
+            password = None
+
+    console.print(
+        "Please Wait While Your System is Connecting to the Remote Server 🖥️",
+        style="green",
+    )
+
+    if password is not None:
+        # Pass the password via an environment variable (sshpass -e) rather
+        # than a CLI argument (sshpass -p), so it never shows up in `ps`
+        # output or shell history.
+        env = {**os.environ, "SSHPASS": password}
+        subprocess.run(["sshpass", "-e", "ssh", host], check=True, env=env)
+    else:
+        subprocess.run(["ssh", host], check=True)
 
 
 def ask_host_prompt():
@@ -32,17 +73,12 @@ def ask_host_prompt():
             _cmd_exec_data = cmd.split("-> ")[1]  # clean the data from answers
         except IndexError:
             raise ValueError("Invalid format: expected '-> ' delimiter in the answer.")
-        if os.name == "nt":  # Windows
-            subprocess.run(["cls"], shell=True, check=True)
-        else:  # Unix-like systems
-            subprocess.run(["clear"], check=True)
-        console.print(
-            "Please Wait While Your System is Connecting to the Remote Server 🖥️",
-            style="green",
-        )
-        subprocess.run(["ssh", _cmd_exec_data], check=True)
+        _connect(_cmd_exec_data)
     except subprocess.CalledProcessError as e:
-        print(f"Error: {e.stdout}")
+        # ssh's own error output is already streamed straight to the
+        # terminal (it isn't captured here), so there's nothing useful in
+        # e.stdout/e.stderr to add -- just report the exit status.
+        console.print(f"[bold red]Connection failed[/bold red] (exit code {e.returncode}).")
     except Exception as Error:
         print(f"\nInterrupted by {Error}")
 
@@ -96,6 +132,19 @@ def add_host_prompt() -> None:
             default="",
         ).execute()
 
+        save_password = inquirer.confirm(
+            message=("Save a password for this host? (encrypted, only usable on " "this device)"),
+            default=False,
+        ).execute()
+
+        password = None
+        if save_password:
+            password = inquirer.secret(
+                message="Password:",
+                validate=lambda val: len(val) > 0,
+                invalid_message="Password cannot be empty.",
+            ).execute()
+
         # Normalize values
         host = host.strip()
         hostname = hostname.strip()
@@ -115,6 +164,8 @@ def add_host_prompt() -> None:
             console.print("  Port:          [cyan]22[/cyan]")
         if identity_file:
             console.print(f"  IdentityFile:  [cyan]{identity_file}[/cyan]")
+        if password:
+            console.print("  Password:      [cyan](will be saved, encrypted)[/cyan]")
 
         confirm = inquirer.confirm(
             message="Add this host to SSH config?",
@@ -132,6 +183,9 @@ def add_host_prompt() -> None:
             port=port_int,
             identity_file=identity_file,
         )
+
+        if password:
+            password_store.save_password(host, password)
 
         console.print(
             "[bold green]Success![/bold green] Host "
@@ -151,9 +205,7 @@ def remove_host_prompt() -> None:
     try:
         hosts = get_config_file_host_data()
         if not hosts:
-            console.print(
-                "[bold yellow]No hosts found in SSH config.[/bold yellow]"
-            )
+            console.print("[bold yellow]No hosts found in SSH config.[/bold yellow]")
             return
 
         selected = inquirer.checkbox(
@@ -170,9 +222,7 @@ def remove_host_prompt() -> None:
             try:
                 host_aliases.append(item.split("-> ")[1].strip())
             except IndexError:
-                raise ValueError(
-                    "Invalid format: expected '-> ' delimiter in the answer."
-                )
+                raise ValueError("Invalid format: expected '-> ' delimiter in the answer.")
 
         # Display table with all selected hosts
         config_content = get_config_content()
@@ -202,6 +252,7 @@ def remove_host_prompt() -> None:
 
         for alias in host_aliases:
             remove_host_from_config(alias)
+            password_store.delete_password(alias)
             console.print(
                 f"[bold green]Success![/bold green] Host "
                 f"'[cyan]{alias}[/cyan]' "
@@ -212,6 +263,4 @@ def remove_host_prompt() -> None:
     except ValueError as e:
         console.print(f"\n[bold red]Error:[/bold red] {e}")
     except Exception as e:
-        console.print(
-            f"\n[bold red]Unexpected error:[/bold red] {e}"
-        )
+        console.print(f"\n[bold red]Unexpected error:[/bold red] {e}")

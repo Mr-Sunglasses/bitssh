@@ -100,6 +100,46 @@ bitssh add --host myserver --hostname 192.168.1.1 --user admin --identity-file ~
 | `--user` | Login username |
 | `--port` | SSH port (default: 22) |
 | `--identity-file` | Path to private key file |
+| `--ask-password` | Prompt (hidden input) for a password to save for this host |
+
+### Saving a Password (optional)
+
+bitssh can optionally save a password for a host so you don't have to type it
+on every connection.
+
+**Interactive mode** — `bitssh add` asks whether you want to save a password
+for the host you're adding.
+
+**Non-interactive mode** — pass `--ask-password` and you'll be prompted for
+it (hidden input, not stored in shell history):
+
+```bash
+bitssh add --host myserver --hostname 192.168.1.1 --ask-password
+```
+
+Saved passwords are:
+
+- Encrypted with a key derived from a machine-specific identifier (platform
+  UUID / machine-id / MAC address), using AES-256-GCM. The identifier itself
+  is never written to disk.
+- Stored separately from `~/.ssh/config`, in `~/.ssh/bitssh_passwords.json`
+  (file permissions `0600`), so they're never in plain text and don't end up
+  synced/backed up alongside your regular SSH config.
+- Only usable on the machine that saved them — copying `bitssh_passwords.json`
+  to another device yields ciphertext that can't be decrypted there.
+
+To auto-fill a saved password when connecting, install
+[`sshpass`](https://linux.die.net/man/1/sshpass) (e.g. `brew install sshpass`
+or `apt install sshpass`). Without `sshpass`, bitssh warns you and falls back
+to SSH's normal password prompt. The password is passed to `sshpass` via an
+environment variable, so it never appears in `ps` output or shell history.
+
+This is data-at-rest protection, not a replacement for full-disk encryption
+or an OS keychain: anyone who can run code as your local user can always ask
+bitssh to decrypt a saved password, the same as any secret an OS keychain
+would unlock automatically for that user.
+
+Removing a host (see below) also deletes any password saved for it.
 
 ### Removing a Host
 

@@ -50,6 +50,15 @@ class Config:
             default=None,
             help="Path to the private key file (e.g. ~/.ssh/id_rsa).",
         )
+        add_parser.add_argument(
+            "--ask-password",
+            action="store_true",
+            default=False,
+            help=(
+                "Prompt (hidden input) for a password to save for this host, "
+                "encrypted with a device-bound key."
+            ),
+        )
 
         # `bitssh remove` subcommand
         remove_parser = subparsers.add_parser(
@@ -60,10 +69,7 @@ class Config:
             type=str,
             nargs="+",
             default=None,
-            help=(
-                "One or more hosts to remove "
-                "(e.g. --host myserver or --host srv1 srv2)."
-            ),
+            help=("One or more hosts to remove " "(e.g. --host myserver or --host srv1 srv2)."),
         )
 
         args: Namespace = parser.parse_args()
@@ -76,6 +82,7 @@ class Config:
         self.user: Optional[str] = getattr(args, "user", None)
         self.port: Optional[int] = getattr(args, "port", None)
         self.identity_file: Optional[str] = getattr(args, "identity_file", None)
+        self.ask_password: bool = getattr(args, "ask_password", False)
 
     def is_add_interactive(self) -> bool:
         """Return True if `bitssh add` was called without any flags (interactive mode)."""

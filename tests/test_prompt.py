@@ -427,7 +427,7 @@ class TestAskHostPrompt:
             cls_calls = [c for c in mock_subprocess.run.call_args_list if c[0][0] == ["cls"]]
             assert len(cls_calls) >= 1
 
-    def test_called_process_error_handling(self, capsys):
+    def test_called_process_error_handling(self):
         from subprocess import CalledProcessError as RealCalledProcessError
 
         with (
@@ -435,12 +435,14 @@ class TestAskHostPrompt:
             patch("src.bitssh.prompt.inquirer") as mock_inquirer,
             patch("src.bitssh.prompt.subprocess.run") as mock_run,
             patch("src.bitssh.prompt.os.name", "posix"),
-            patch("src.bitssh.prompt.console"),
+            patch("src.bitssh.prompt.console") as mock_console,
             patch("src.bitssh.prompt.subprocess.CalledProcessError", RealCalledProcessError),
         ):
             mock_inquirer.fuzzy.return_value.execute.return_value = "🖥️  -> myserver"
             mock_run.side_effect = RealCalledProcessError(1, "ssh", output="connection failed")
 
             ask_host_prompt()
-            captured = capsys.readouterr()
-            assert "Error" in captured.out
+
+            printed = " ".join(str(c.args[0]) for c in mock_console.print.call_args_list)
+            assert "Connection failed" in printed
+            assert "1" in printed
